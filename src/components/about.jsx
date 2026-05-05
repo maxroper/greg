@@ -371,7 +371,18 @@ export default function About({ show }) {
               {(fbPosts || Array.from({ length: 3 })).map((p, i) =>
                 p ? (
                   <Reveal key={p.id || i} delay={i * 100}>
-                    <a className="fb-card" href={p.permalink || FB_PAGE_URL} target="_blank" rel="noopener noreferrer">
+                    <a className={`fb-card ${p.media ? "fb-card-with-media" : ""}`} href={p.permalink || FB_PAGE_URL} target="_blank" rel="noopener noreferrer">
+                      {p.media?.image && (
+                        <div className={`fb-card-media fb-card-media-${p.media.type || "photo"}`}>
+                          <img src={p.media.image} alt="" loading="lazy" decoding="async" />
+                          {p.media.type === "video" && (
+                            <span className="fb-card-media-play" aria-hidden />
+                          )}
+                          {p.media.extraCount > 0 && (
+                            <span className="fb-card-media-badge mono">+{p.media.extraCount}</span>
+                          )}
+                        </div>
+                      )}
                       <div className="fb-card-head">
                         <div className="fb-card-avatar">GP</div>
                         <div className="fb-card-meta">
@@ -389,7 +400,8 @@ export default function About({ show }) {
                   </Reveal>
                 ) : (
                   <Reveal key={`sk-${i}`} delay={i * 100}>
-                    <div className="fb-card fb-card-skeleton" aria-hidden>
+                    <div className="fb-card fb-card-skeleton fb-card-with-media" aria-hidden>
+                      <div className="fb-card-media fb-sk-media" />
                       <div className="fb-card-head">
                         <div className="fb-card-avatar">GP</div>
                         <div className="fb-card-meta">
@@ -622,7 +634,64 @@ aboutStyles.textContent = `
 .fb-card-stats { display: flex; gap: 16px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 11px; letter-spacing: 0.06em; color: var(--bone-dim); flex-wrap: wrap; }
 .fb-card-stats strong { color: var(--bone); font-weight: 600; }
 
+.fb-card-with-media { padding-top: 0; }
+.fb-card-media {
+  position: relative;
+  aspect-ratio: 16/10;
+  margin: -24px -24px 18px;
+  overflow: hidden;
+  background: var(--navy-900);
+  border-bottom: 1px solid var(--rule);
+}
+.fb-card-media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 600ms cubic-bezier(.2,.8,.2,1);
+}
+.fb-card:hover .fb-card-media img { transform: scale(1.03); }
+.fb-card-media::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(5,13,26,0.45) 100%);
+  pointer-events: none;
+}
+.fb-card-media-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: rgba(5,13,26,0.78);
+  color: var(--bone);
+  padding: 5px 10px;
+  border: 1px solid var(--rule);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+  z-index: 2;
+}
+.fb-card-media-play {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,0.18);
+  pointer-events: none;
+  z-index: 2;
+}
+.fb-card-media-play::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 22px solid var(--bone);
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  margin-left: 6px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+}
+
 .fb-card-skeleton { pointer-events: none; }
+.fb-sk-media {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 200% 100%;
+  animation: fbShimmer 1.6s ease-in-out infinite;
+}
+.fb-sk-media::after { display: none; }
 .fb-sk-bar {
   display: block;
   height: 12px;

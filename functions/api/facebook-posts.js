@@ -19,6 +19,7 @@ const FALLBACK = [
     likes: 318, comments: 47, shares: 22,
     tag: "MEMORY",
     permalink: "https://www.facebook.com/GregPryor85/",
+    media: { type: "photo", image: "/assets/greg-yankees.jpg", extraCount: 0 },
   },
   {
     id: "static-2",
@@ -27,6 +28,7 @@ const FALLBACK = [
     likes: 642, comments: 89, shares: 41,
     tag: "EVENT",
     permalink: "https://www.facebook.com/GregPryor85/",
+    media: { type: "photo", image: "/assets/greg-kids.jpg", extraCount: 0 },
   },
   {
     id: "static-3",
@@ -35,6 +37,7 @@ const FALLBACK = [
     likes: 1240, comments: 156, shares: 88,
     tag: "STORY",
     permalink: "https://www.facebook.com/GregPryor85/",
+    media: null,
   },
 ];
 
@@ -63,6 +66,7 @@ export async function onRequestGet({ request, env, ctx }) {
         "reactions.summary(true)",
         "comments.summary(true)",
         "shares",
+        "attachments{media_type,media,subattachments{media}}",
       ].join(",");
 
       const graphUrl = new URL(`https://graph.facebook.com/${GRAPH_VERSION}/${env.FB_PAGE_ID}/posts`);
@@ -111,7 +115,30 @@ function normalize(p) {
     shares: p.shares?.count ?? 0,
     permalink: p.permalink_url || "https://www.facebook.com/GregPryor85/",
     tag: detectTag(p.message),
+    media: extractMedia(p),
   };
+}
+
+// Picks the first attachment off a post and returns:
+//   { type: "photo" | "video" | "album" | "link", image, extraCount }
+// or null if there's nothing visual to show. We keep this conservative on
+// purpose — a single hero thumbnail is enough; layouts with 4-up grids would
+// fight the rest of the design.
+function extractMedia(p) {
+  const att = p.attachments?.data?.[0];
+  if (!att) return null;
+  const type = att.media_type || "link";
+
+  // Albums: surface the first sub-attachment's image and a "+N" badge.
+  const sub = att.subattachments?.data || [];
+  const image =
+    att.media?.image?.src ||
+    sub.find((s) => s.media?.image?.src)?.media?.image?.src ||
+    null;
+  if (!image) return null;
+
+  const extraCount = sub.length > 1 ? sub.length - 1 : 0;
+  return { type, image, extraCount };
 }
 
 function humanizeRelative(iso) {

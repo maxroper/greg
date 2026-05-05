@@ -16,6 +16,8 @@ export const FB_POSTS = [
     text: "Forty-one years ago today I made my Royals debut in spring training. Fans still send me cards from that '85 club to sign. I sign every one. Keep 'em coming.",
     likes: 318, comments: 47, shares: 22,
     tag: "MEMORY",
+    permalink: "https://www.facebook.com/GregPryor85/",
+    media: { type: "photo", image: "/assets/greg-yankees.jpg", extraCount: 0 },
   },
   {
     id: 2,
@@ -23,6 +25,8 @@ export const FB_POSTS = [
     text: "Headed to Indian Valley last weekend to talk baseball with the kids. They asked me which was scarier — facing Nolan Ryan or signing the contract that meant I had to shave. I told them the truth.",
     likes: 642, comments: 89, shares: 41,
     tag: "EVENT",
+    permalink: "https://www.facebook.com/GregPryor85/",
+    media: { type: "photo", image: "/assets/greg-kids.jpg", extraCount: 0 },
   },
   {
     id: 3,
@@ -30,6 +34,8 @@ export const FB_POSTS = [
     text: "Bret Saberhagen called me yesterday. He's still mad I didn't catch that ball in Game 7. I told him to read Chapter 11. We laughed for an hour.",
     likes: 1240, comments: 156, shares: 88,
     tag: "STORY",
+    permalink: "https://www.facebook.com/GregPryor85/",
+    media: null,
   },
 ];
 

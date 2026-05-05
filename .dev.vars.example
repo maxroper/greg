@@ -1,0 +1,14 @@
+# Copy to .dev.vars for local Pages Functions development with `wrangler pages dev`.
+# .dev.vars is gitignored. Never commit real keys.
+
+# Get your test key from https://dashboard.stripe.com/test/apikeys
+# Format: sk_test_<your-secret-key>
+STRIPE_SECRET_KEY=
+
+# Optional - Resend email notifications for /api/apply and /api/speaking-request.
+# RESEND_API_KEY=
+# APPLY_NOTIFY_TO=gpryor@lifepriority.com
+# APPLY_NOTIFY_FROM=no-reply@gregpryor.com
+
+# Optional - override the public origin used in Stripe success/cancel URLs.
+# PUBLIC_BASE_URL=https://gregpryor.com

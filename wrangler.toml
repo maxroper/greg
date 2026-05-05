@@ -1,0 +1,8 @@
+name = "gregpryor"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
+
+# Local-dev-only secrets live in .dev.vars (gitignored).
+# Production secrets are set in the Cloudflare Pages dashboard:
+#   Settings -> Environment Variables -> STRIPE_SECRET_KEY (encrypted)

@@ -1,11 +1,21 @@
 # Greg Pryor — Royals '85
 
-Personal site for Greg Pryor: book sales, memorabilia, "sit next to me" applications,
-speaking inquiries, and a Stripe-powered shopping cart.
+Personal site for Greg Pryor: book sales (Stripe), memorabilia gallery, "sit
+next to me" Diamond Club applications, speaking-engagement inquiries, live
+Facebook posts, Spotify playlists, podcast teaser, contact.
 
 - **Stack:** React 18 + Vite (no TypeScript, no framework lock-in)
-- **Hosting:** Cloudflare Pages (static SPA + Pages Functions for the API)
+- **Hosting:** Cloudflare Workers + Static Assets (auto-deploys from GitHub)
 - **Payments:** Stripe Checkout (hosted page, PCI-compliant)
+- **Email:** Resend (form submissions + order alerts to gpryor@lifepriority.com)
+- **Analytics:** Google Analytics 4 (opt-in via env var)
+
+> **Setting up the live site for the first time?** See [SETUP.md](SETUP.md) — the
+> end-to-end checklist for getting Stripe, Resend, Facebook, Spotify, GA, and a
+> custom domain configured. This README covers code and architecture; SETUP.md
+> covers credentials.
+
+---
 
 ## Getting started
 
@@ -14,143 +24,195 @@ npm install
 npm run dev          # Vite dev server on http://localhost:5173
 ```
 
-The frontend works standalone in `npm run dev`. To exercise the `/api/*` endpoints
-locally you need Wrangler:
+The frontend works standalone in `npm run dev` (API calls fall back gracefully
+to static placeholder data). To exercise the `/api/*` endpoints locally you
+need Wrangler:
 
 ```bash
 cp .dev.vars.example .dev.vars
-# edit .dev.vars and paste your Stripe test secret key (sk_test_...)
-npm run pages:dev
+# fill in the keys you want to test against (Stripe test key, Resend, etc.)
+npm run pages:dev    # builds + serves with Wrangler on http://localhost:8788
 ```
+
+---
 
 ## Project layout
 
 ```
 .
-├── index.html                       # Vite entry
+├── index.html                       # Vite entry, with OG / Twitter / JSON-LD meta
+├── worker.js                        # Cloudflare Worker entry — routes /api/*,
+│                                    #   serves dist/ via the assets binding,
+│                                    #   falls back to index.html for SPA routes
+├── wrangler.jsonc                   # Workers + Static Assets config
+│
 ├── src/
 │   ├── main.jsx                     # React mount
-│   ├── App.jsx                      # Section composition
-│   ├── styles.css                   # Design system (tokens, utilities, .grain, .reveal)
-│   ├── data.js                      # All content (stats, quotes, memorabilia, etc.)
-│   └── components/                  # One file per section, scoped CSS injected at module load
+│   ├── App.jsx                      # Section composition + tiny pathname router
+│   ├── styles.css                   # Design system (tokens, .grain, .reveal)
+│   ├── data.js                      # All static content (stats, quotes, items)
+│   └── components/
 │       ├── primitives.jsx           # Reveal, Btn, Eyebrow, ScrollProgress, hooks
-│       ├── nav.jsx, hero.jsx, book.jsx, memorabilia.jsx, mytake.jsx,
-│       │ apply.jsx, podcast.jsx, about.jsx, footer.jsx
-│       ├── checkout.jsx             # 4-step modal that POSTs to /api/create-checkout-session
-│       ├── checkout-banner.jsx      # ?checkout=success|cancel toast on return from Stripe
-│       └── request-date-modal.jsx   # Speaking-inquiry form
+│       ├── nav.jsx                  # Top nav with active-section indicator
+│       ├── hero.jsx                 # Greg Pryor / № 4 hero with sweep animation
+│       ├── book.jsx                 # Book section (opens Checkout modal)
+│       ├── checkout.jsx             # 4-step modal → POST /api/create-checkout-session
+│       ├── checkout-banner.jsx      # ?checkout=success|cancel toast on return
+│       ├── memorabilia.jsx          # Bento grid + detail modal
+│       ├── mytake.jsx               # Hot takes
+│       ├── apply.jsx                # Diamond Club application form
+│       ├── podcast.jsx              # Baseball Town teaser
+│       ├── about.jsx                # Bio, stats, speaking, music (Spotify),
+│       │                            #   Life Priority, Facebook posts, contact
+│       ├── request-date-modal.jsx   # Speaking-inquiry form
+│       ├── privacy.jsx              # /privacy legal page
+│       ├── analytics.jsx            # GA4 (no-op if env var unset)
+│       └── footer.jsx
+│
 ├── public/
-│   ├── assets/                      # Greg photos + memorabilia/*.jpg, served at /assets/...
-│   └── _redirects                   # SPA fallback for Cloudflare Pages
-├── functions/api/                   # Cloudflare Pages Functions (one file = one route)
-│   ├── create-checkout-session.js   # POST -> creates Stripe session, returns hosted URL
-│   ├── apply.js                     # POST -> Diamond Club seat application
-│   └── speaking-request.js          # POST -> speaking-engagement inquiry
+│   ├── favicon.svg                  # GP avatar mark
+│   ├── robots.txt
+│   ├── sitemap.xml
+│   └── assets/                      # Photos, served at /assets/...
+│       ├── greg-yankees.jpg
+│       ├── greg-fielding.jpg
+│       ├── greg-kids.jpg
+│       └── memorabilia/             # 10 jpgs of Greg's items
+│
+├── functions/api/                   # Route handlers, dispatched by worker.js
+│   ├── create-checkout-session.js   # POST → creates Stripe session
+│   ├── stripe-webhook.js            # POST ← Stripe (signed); emails Greg per order
+│   ├── apply.js                     # POST → Diamond Club application
+│   ├── speaking-request.js          # POST → speaking-engagement inquiry
+│   ├── facebook-posts.js            # GET → live FB posts (10-min edge cache)
+│   └── spotify-playlists.js         # GET → live Spotify playlists (30-min cache)
+│
+├── SETUP.md                         # Credentials checklist for production
 ├── .dev.vars.example                # Template for local secrets (.dev.vars is gitignored)
-└── design/                          # Original HTML/CSS/JS handoff bundle (gitignored)
+└── design/                          # Original handoff bundle (gitignored, kept for reference)
 ```
 
-## Cloudflare Pages — first-time deploy
+---
 
-The repo is structured so Cloudflare Pages auto-deploys on every push to `main`.
+## Deploy
 
-1. **Push to GitHub.** Create a new repo, then:
-   ```bash
-   git remote add origin git@github.com:<you>/gregpryor.git
-   git push -u origin main
-   ```
-2. **Create the Pages project.**
-   In the Cloudflare dashboard: Workers & Pages → Create → Pages → Connect to Git →
-   pick the repo. Build settings:
-   - Framework preset: **None**
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-   - Root directory: `/`
-3. **Set environment variables.**
-   Settings → Variables and Secrets → Production:
-   - `STRIPE_SECRET_KEY` — Stripe live secret key (Encrypt before saving)
-   - `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret (set after step 6 below)
-   - `RESEND_API_KEY` — Resend API key for email notifications (Encrypt)
-   - `NOTIFY_TO` — `gpryor@lifepriority.com` (where Greg gets notifications)
-   - `NOTIFY_FROM` — `Greg's Site <noreply@yourdomain.com>` (must be a domain
-     verified in Resend, OR `Greg's Site <onboarding@resend.dev>` for sandbox)
-   - *(optional)* `PUBLIC_BASE_URL` if the canonical origin differs from the
-     served URL (e.g. when fronted by a custom domain).
+The repo is wired to **Cloudflare Workers Builds**. Every push to `main`
+auto-deploys to production; pushes to other branches produce preview URLs.
 
-   Repeat under "Preview" with `sk_test_…` keys for branch deploys.
-4. **Custom domain.** Workers & Pages → your project → Settings → Domains. Cloudflare
-   issues the cert automatically.
-5. **Resend (email notifications).**
-   Sign up at https://resend.com (free tier: 3,000 emails/month). To send from a
-   real address rather than the sandbox, add and verify a domain (e.g.
-   `lifepriority.com` or `gregpryor.com`) under Domains in the Resend dashboard.
-   This requires adding the SPF/DKIM/DMARC DNS records they show you. Once
-   verified, set `NOTIFY_FROM=Greg's Site <noreply@<your-verified-domain>>`.
-6. **Stripe webhook (recommended for order alerts).**
-   Stripe Dashboard → Developers → Webhooks → Add endpoint:
-   - Endpoint URL: `https://<your-domain>/api/stripe-webhook`
-   - Events: `checkout.session.completed`
-   Copy the signing secret (starts with `whsec_`) and paste it into the
-   Cloudflare `STRIPE_WEBHOOK_SECRET` env var. Without this, orders still
-   process but Greg won't get an email per order.
-7. **Facebook live posts (optional).**
-   Without setup, the Facebook section uses a static fallback. To pull real
-   posts from `@GregPryor85`:
-   1. Go to https://developers.facebook.com/apps → **Create App** → "Other" →
-      "Business" → name it (e.g. "Greg Pryor Site").
-   2. In the app dashboard go to **Tools → Graph API Explorer**.
-   3. Top right, "Meta App" dropdown → select your new app.
-   4. "User or Page" dropdown → **User Token** → click **Generate Access Token**,
-      grant `pages_show_list`, `pages_read_engagement`, `pages_read_user_content`.
-   5. Switch the dropdown to **Page Token** → pick the **Greg Pryor 85** page.
-      Copy the token shown.
-   6. **Make it long-lived.** That token expires in an hour. Run, replacing
-      `<short_token>` and `<app_id>`/`<app_secret>` (from app dashboard → Settings → Basic):
-      ```bash
-      curl "https://graph.facebook.com/v23.0/oauth/access_token?grant_type=fb_exchange_token&client_id=<app_id>&client_secret=<app_secret>&fb_exchange_token=<short_token>"
-      ```
-      That returns a 60-day user token. Then call this with the user token to
-      get a never-expiring Page Token:
-      ```bash
-      curl "https://graph.facebook.com/v23.0/me/accounts?access_token=<long_user_token>"
-      ```
-      Find Greg Pryor 85 in the response, copy its `access_token`.
-   7. Add the Cloudflare env vars:
-      ```
-      FB_PAGE_ID            = GregPryor85          (or the numeric page ID)
-      FB_PAGE_ACCESS_TOKEN  = <never-expiring page token>     (Encrypt)
-      ```
-   Posts are cached at the edge for 10 minutes so the page stays fast and we
-   don't hit Graph API rate limits.
+What happens on a push:
+1. Cloudflare clones the repo.
+2. Runs `npm clean-install`.
+3. Runs `npm run build` → Vite produces `dist/`.
+4. Runs `npx wrangler deploy` → reads `wrangler.jsonc`, uploads `worker.js` +
+   `dist/` as static assets, binds env vars, swaps live traffic.
 
-After step 1 every `git push origin main` produces a production deploy; pushes to
-other branches produce preview deploys with a unique URL — useful for review.
+To deploy from your local machine instead (e.g. for testing):
+```bash
+npm run deploy
+```
 
-## Stripe flow
+For the full credential setup walkthrough — Stripe, Resend, Facebook, Spotify,
+GA4, custom domain — see **[SETUP.md](SETUP.md)**.
 
-1. User completes steps 1–3 in the in-page modal (edition / personalization / shipping).
-2. On step 4 ("Pay"), the client POSTs the order to `/api/create-checkout-session`.
-3. The Pages Function recomputes prices from a trusted catalog (the client cannot
-   alter the amount), creates a Stripe Checkout Session with personalization stored
-   as session `metadata`, and returns the hosted-page URL.
+---
+
+## How requests get served
+
+```
+                        Cloudflare edge
+   ┌─────────────────────────────────────────────────────┐
+   │                                                     │
+   │  /assets/* /favicon.svg /sitemap.xml /robots.txt    │
+   │  /index.html /privacy → STATIC ASSET (from dist/)   │
+   │                                                     │
+   │  /api/*                → worker.js dispatches to    │
+   │                          functions/api/<route>.js   │
+   │                                                     │
+   │  /anything-else        → worker.js serves           │
+   │                          index.html (SPA fallback)  │
+   │                                                     │
+   └─────────────────────────────────────────────────────┘
+```
+
+`functions/api/*.js` files are imported by `worker.js` and dispatched by
+URL path. They each export `onRequestPost` / `onRequestGet` functions that
+take `{ request, env, ctx }` (the standard Cloudflare Pages Functions signature).
+
+---
+
+## Stripe checkout flow
+
+1. User picks edition + personalisation + shipping in the in-page modal
+   (`src/components/checkout.jsx`, steps 1–3).
+2. On step 4 ("Pay with Stripe"), the client POSTs the order to
+   `/api/create-checkout-session`.
+3. The Pages Function recomputes prices from a server-side trusted catalog
+   (the client cannot alter the amount), creates a Stripe Checkout Session
+   with personalisation stored as session `metadata`, and returns the hosted
+   payment URL.
 4. The browser redirects to Stripe Checkout. Stripe handles card collection,
-   3DS, Apple Pay, and PCI compliance.
+   3DS, Apple Pay, PCI compliance.
 5. On completion Stripe redirects back to `/?checkout=success&session_id=…`.
    `CheckoutBanner` reads the query string and shows a confirmation toast.
+6. Stripe also fires `checkout.session.completed` to `/api/stripe-webhook`,
+   which verifies the signature and emails Greg the full order details
+   (recipient name, inscription, ball inscription, shipping address).
 
-To switch from test to live mode: replace `STRIPE_SECRET_KEY` in Cloudflare's
-Production environment with `sk_live_…`.
+Switching test → live: replace `STRIPE_SECRET_KEY` in Cloudflare's Production
+environment with `sk_live_…` and update the webhook signing secret.
+
+---
+
+## Form submissions
+
+Both `/api/apply` and `/api/speaking-request` log to the Cloudflare console
+and (if `RESEND_API_KEY` is set) email **gpryor@lifepriority.com** via Resend.
+The `Reply-To` header is the applicant's email, so hitting Reply in Greg's
+inbox responds directly to them.
+
+---
+
+## Live Facebook + Spotify
+
+Both sections fall back to static placeholder data (defined in
+`functions/api/<service>.js` and `src/data.js`) until the env vars are set.
+Once configured:
+
+- **Facebook**: pulls Greg's latest 3 posts (text + photos + counts) from
+  the Graph API. Edge-cached 10 min.
+- **Spotify**: pulls 4 of Greg's public playlists (cover art + track count +
+  link). Edge-cached 30 min. Optional `SPOTIFY_PLAYLIST_IDS` env var pins
+  exactly which 4 to show.
+
+See SETUP.md for the token/key generation steps.
+
+---
 
 ## Editing content
 
-Every piece of static copy — book quotes, memorabilia descriptions, podcast episode
-list, hot take, playlists, nav items — lives in `src/data.js`. Edit there; no other
-file changes needed.
+Static copy lives in `src/data.js`:
+
+| Constant | What it controls |
+|---|---|
+| `BOOK_QUOTES` | Endorsement blurbs in the book section |
+| `PRYOR_STATS` | Career stats (highlights, by-year, totals) |
+| `MEMORABILIA` | The 10 items in the bento grid + their descriptions |
+| `TAKES` | "My Take" hot takes (5 baseball-rule opinions) |
+| `HOT_TAKE_ROYALS` | The pinned "hot take of the week" callout |
+| `PODCAST_EPS` | Podcast episode list (currently shown as "coming soon") |
+| `PLAYLISTS` | Static fallback playlists (real ones come from Spotify when configured) |
+| `FB_POSTS` | Static fallback posts (real ones come from Facebook when configured) |
+| `NAV_ITEMS` | Top nav labels + section IDs |
+| `ASSETS` | Hero/about photo paths (point at files in `/public/assets/`) |
+
+To update **upcoming Royals home games** for the apply form, edit the
+`upcoming` array in `src/components/apply.jsx`.
+
+---
 
 ## Design source
 
-The original Claude Design handoff bundle lives in `design/` (gitignored). It
-contains the HTML/CSS/JS prototype the user iterated on, the chat transcripts that
-captured the intent, and screenshots of every iteration. Keep it around for future
+The original Claude Design handoff bundle lives in `design/` (gitignored).
+It contains the HTML/CSS/JS prototype, the chat transcripts that captured
+the intent, and screenshots of every iteration. Keep it around for future
 visual reference; don't ship it.

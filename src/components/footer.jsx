@@ -34,13 +34,10 @@ export default function Footer() {
               <a href="https://www.facebook.com/GregPryor85/" target="_blank" rel="noopener noreferrer">Facebook</a>
               <a href="https://www.amazon.com/Day-Yankees-Made-Me-Shave-ebook/dp/B08FV8TLGW" target="_blank" rel="noopener noreferrer">Amazon</a>
               <a href="https://lifepriority.com/product/lift-caps/" target="_blank" rel="noopener noreferrer">Life Priority</a>
-              <a href="#" onClick={(e)=>e.preventDefault()}>Spotify</a>
             </div>
             <div>
               <div className="mono footer-h">LEGAL</div>
-              <a href="#" onClick={(e)=>e.preventDefault()}>Press Kit</a>
-              <a href="#" onClick={(e)=>e.preventDefault()}>Privacy</a>
-              <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a>
+              <a href="/privacy">Privacy Policy</a>
             </div>
           </div>
         </div>

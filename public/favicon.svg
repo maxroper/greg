@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#0b1a2e"/>
+  <circle cx="100" cy="100" r="76" fill="#0064c2" stroke="#bd9b60" stroke-width="4"/>
+  <text x="100" y="124" font-family="Georgia, 'Times New Roman', serif" font-size="84" font-weight="700" fill="#f5efe1" text-anchor="middle">GP</text>
+</svg>

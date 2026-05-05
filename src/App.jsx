@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NAV_ITEMS } from "./data.js";
 import { ScrollProgress, useActiveSection, useSectionInView } from "./components/primitives.jsx";
 import Nav from "./components/nav.jsx";
@@ -12,8 +12,34 @@ import Podcast from "./components/podcast.jsx";
 import Footer from "./components/footer.jsx";
 import CheckoutBanner from "./components/checkout-banner.jsx";
 import Analytics from "./components/analytics.jsx";
+import Privacy from "./components/privacy.jsx";
+
+// Tiny pathname-based router. The Worker serves index.html for any non-asset
+// non-API request, so /privacy hits this app and we render the right page.
+function usePathname() {
+  const [path, setPath] = useState(typeof window !== "undefined" ? window.location.pathname : "/");
+  useEffect(() => {
+    const onPop = () => setPath(window.location.pathname);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+  return path;
+}
 
 export default function App() {
+  const path = usePathname();
+  if (path.startsWith("/privacy")) {
+    return (
+      <>
+        <Analytics />
+        <Privacy />
+      </>
+    );
+  }
+  return <Home />;
+}
+
+function Home() {
   const ids = NAV_ITEMS.map((n) => n.id);
   const active = useActiveSection(ids);
   useSectionInView();

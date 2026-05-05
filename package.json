@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "pages:dev": "wrangler pages dev -- npm run dev",
-    "deploy": "vite build && wrangler pages deploy dist"
+    "pages:dev": "vite build && wrangler pages dev dist",
+    "deploy": "vite build && wrangler pages deploy dist --project-name=greg"
   },
   "dependencies": {
     "react": "^18.3.1",

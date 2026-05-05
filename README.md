@@ -20,8 +20,7 @@ locally you need Wrangler:
 ```bash
 cp .dev.vars.example .dev.vars
 # edit .dev.vars and paste your Stripe test secret key (sk_test_...)
-npm run build
-npx wrangler pages dev dist --compatibility-flag=nodejs_compat
+npm run pages:dev
 ```
 
 ## Project layout
@@ -48,7 +47,6 @@ npx wrangler pages dev dist --compatibility-flag=nodejs_compat
 │   ├── create-checkout-session.js   # POST -> creates Stripe session, returns hosted URL
 │   ├── apply.js                     # POST -> Diamond Club seat application
 │   └── speaking-request.js          # POST -> speaking-engagement inquiry
-├── wrangler.toml                    # Cloudflare project config
 ├── .dev.vars.example                # Template for local secrets (.dev.vars is gitignored)
 └── design/                          # Original HTML/CSS/JS handoff bundle (gitignored)
 ```

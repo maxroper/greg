@@ -1,4 +1,0 @@
-# SPA fallback: serve the app shell for any unknown route so client-side anchors
-# (#book, #memorabilia, etc.) and refreshed deep links resolve cleanly.
-# Pages Functions under /api/* and /functions/* are matched first.
-/*  /index.html  200

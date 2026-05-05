@@ -1,16 +1,21 @@
 // POST /api/apply - Diamond Club seat application.
-// Stores nothing yet; logs to the Cloudflare console and (if configured) emails
-// Greg via Resend. Returns ok: true so the client always shows the success ticket.
+// Logs to the Cloudflare console and (if RESEND_API_KEY is set) emails Greg.
+// Returns ok: true so the client always shows the success ticket.
 //
-// Optional env vars:
-//   RESEND_API_KEY     - to enable email delivery via Resend
-//   APPLY_NOTIFY_TO    - destination address (defaults to gpryor@lifepriority.com)
-//   APPLY_NOTIFY_FROM  - verified sender address (defaults to no-reply@gregpryor.com)
+// Env vars:
+//   RESEND_API_KEY      - enable email delivery via Resend
+//   NOTIFY_TO           - destination (defaults to gpryor@lifepriority.com)
+//   NOTIFY_FROM         - verified sender (e.g. "Greg's Site <noreply@lifepriority.com>")
 
-const CTRL_RE = /[\x00-\x1f\x7f]/g;
 function str(v, max) {
   if (typeof v !== "string") return "";
-  return v.replace(CTRL_RE, " ").trim().slice(0, max);
+  let out = "";
+  for (let i = 0; i < v.length && out.length < max; i++) {
+    const code = v.charCodeAt(i);
+    if (code < 32 || code === 127) out += " ";
+    else out += v[i];
+  }
+  return out.trim();
 }
 
 export async function onRequestPost({ request, env }) {
@@ -34,15 +39,16 @@ export async function onRequestPost({ request, env }) {
 
   if (env.RESEND_API_KEY) {
     try {
-      await fetch("https://api.resend.com/emails", {
+      const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${env.RESEND_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: env.APPLY_NOTIFY_FROM || "no-reply@gregpryor.com",
-          to: env.APPLY_NOTIFY_TO || "gpryor@lifepriority.com",
+          from: env.NOTIFY_FROM || "Greg's Site <onboarding@resend.dev>",
+          to: env.NOTIFY_TO || "gpryor@lifepriority.com",
+          reply_to: payload.email || undefined,
           subject: `Diamond Club application - ${payload.name} (${payload.date})`,
           text: [
             `Name: ${payload.name}`,
@@ -58,6 +64,7 @@ export async function onRequestPost({ request, env }) {
           ].join("\n"),
         }),
       });
+      if (!res.ok) console.error("Resend non-2xx", res.status, await res.text());
     } catch (err) {
       console.error("Resend failed", err);
     }

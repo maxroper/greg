@@ -1,10 +1,17 @@
 // POST /api/speaking-request - booking inquiry from the speaking modal.
-// Same shape as /api/apply: log + optional Resend email; always returns ok.
+// Logs + (optional) Resend email; always returns ok.
+//
+// Env vars: see functions/api/apply.js (same NOTIFY_TO/NOTIFY_FROM/RESEND_API_KEY).
 
-const CTRL_RE = /[\x00-\x1f\x7f]/g;
 function str(v, max) {
   if (typeof v !== "string") return "";
-  return v.replace(CTRL_RE, " ").trim().slice(0, max);
+  let out = "";
+  for (let i = 0; i < v.length && out.length < max; i++) {
+    const code = v.charCodeAt(i);
+    if (code < 32 || code === 127) out += " ";
+    else out += v[i];
+  }
+  return out.trim();
 }
 
 export async function onRequestPost({ request, env }) {
@@ -33,15 +40,16 @@ export async function onRequestPost({ request, env }) {
 
   if (env.RESEND_API_KEY) {
     try {
-      await fetch("https://api.resend.com/emails", {
+      const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${env.RESEND_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: env.APPLY_NOTIFY_FROM || "no-reply@gregpryor.com",
-          to: env.APPLY_NOTIFY_TO || "gpryor@lifepriority.com",
+          from: env.NOTIFY_FROM || "Greg's Site <onboarding@resend.dev>",
+          to: env.NOTIFY_TO || "gpryor@lifepriority.com",
+          reply_to: payload.email || undefined,
           subject: `Speaking inquiry - ${payload.name} - ${payload.eventType} - ${payload.city || "-"}`,
           text: [
             `Reference: ${id}`,
@@ -63,6 +71,7 @@ export async function onRequestPost({ request, env }) {
           ].join("\n"),
         }),
       });
+      if (!res.ok) console.error("Resend non-2xx", res.status, await res.text());
     } catch (err) {
       console.error("Resend failed", err);
     }

@@ -68,20 +68,32 @@ The repo is structured so Cloudflare Pages auto-deploys on every push to `main`.
    - Build output directory: `dist`
    - Root directory: `/`
 3. **Set environment variables.**
-   Settings → Environment variables → Production:
-   - `STRIPE_SECRET_KEY` — your Stripe live secret key (encrypted)
-   - *(optional)* `RESEND_API_KEY`, `APPLY_NOTIFY_TO`, `APPLY_NOTIFY_FROM`
+   Settings → Variables and Secrets → Production:
+   - `STRIPE_SECRET_KEY` — Stripe live secret key (Encrypt before saving)
+   - `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret (set after step 6 below)
+   - `RESEND_API_KEY` — Resend API key for email notifications (Encrypt)
+   - `NOTIFY_TO` — `gpryor@lifepriority.com` (where Greg gets notifications)
+   - `NOTIFY_FROM` — `Greg's Site <noreply@yourdomain.com>` (must be a domain
+     verified in Resend, OR `Greg's Site <onboarding@resend.dev>` for sandbox)
    - *(optional)* `PUBLIC_BASE_URL` if the canonical origin differs from the
-     Pages-served URL (e.g. when fronted by a custom domain).
-   Add the same vars under "Preview" with `sk_test_...` for branch deploys.
-4. **Custom domain.** Pages → Custom domains → add `gregpryor.com`. Cloudflare
-   issues the cert automatically; DNS just needs the existing A/CNAME records
-   pointed at Pages.
-5. **Stripe webhook (optional but recommended).**
-   In the Stripe dashboard, add an endpoint at `https://<your-domain>/api/stripe-webhook`
-   for `checkout.session.completed`. (Webhook handler isn't wired up yet — add a file at
-   `functions/api/stripe-webhook.js` when you're ready to send order-confirmation
-   emails or sync to a fulfilment system.)
+     served URL (e.g. when fronted by a custom domain).
+
+   Repeat under "Preview" with `sk_test_…` keys for branch deploys.
+4. **Custom domain.** Workers & Pages → your project → Settings → Domains. Cloudflare
+   issues the cert automatically.
+5. **Resend (email notifications).**
+   Sign up at https://resend.com (free tier: 3,000 emails/month). To send from a
+   real address rather than the sandbox, add and verify a domain (e.g.
+   `lifepriority.com` or `gregpryor.com`) under Domains in the Resend dashboard.
+   This requires adding the SPF/DKIM/DMARC DNS records they show you. Once
+   verified, set `NOTIFY_FROM=Greg's Site <noreply@<your-verified-domain>>`.
+6. **Stripe webhook (recommended for order alerts).**
+   Stripe Dashboard → Developers → Webhooks → Add endpoint:
+   - Endpoint URL: `https://<your-domain>/api/stripe-webhook`
+   - Events: `checkout.session.completed`
+   Copy the signing secret (starts with `whsec_`) and paste it into the
+   Cloudflare `STRIPE_WEBHOOK_SECRET` env var. Without this, orders still
+   process but Greg won't get an email per order.
 
 After step 1 every `git push origin main` produces a production deploy; pushes to
 other branches produce preview deploys with a unique URL — useful for review.

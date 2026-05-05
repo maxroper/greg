@@ -1,14 +1,28 @@
 # Copy to .dev.vars for local Pages Functions development with `wrangler pages dev`.
 # .dev.vars is gitignored. Never commit real keys.
 
-# Get your test key from https://dashboard.stripe.com/test/apikeys
+# --- Stripe (required for checkout) ---
+# Get test key from https://dashboard.stripe.com/test/apikeys
 # Format: sk_test_<your-secret-key>
 STRIPE_SECRET_KEY=
 
-# Optional - Resend email notifications for /api/apply and /api/speaking-request.
-# RESEND_API_KEY=
-# APPLY_NOTIFY_TO=gpryor@lifepriority.com
-# APPLY_NOTIFY_FROM=no-reply@gregpryor.com
+# Webhook signing secret from Stripe Dashboard > Developers > Webhooks
+# Format: whsec_<your-signing-secret>
+STRIPE_WEBHOOK_SECRET=
 
-# Optional - override the public origin used in Stripe success/cancel URLs.
+# --- Email notifications (optional) ---
+# Get a free key from https://resend.com (3,000 emails/month free)
+# Without this, form submissions and order alerts only log to the console.
+RESEND_API_KEY=
+
+# Where Greg receives notifications.
+NOTIFY_TO=gpryor@lifepriority.com
+
+# The "From" address shown on outgoing notification emails. Must be either:
+#   1. onboarding@resend.dev   (works immediately, sends only to your Resend account email)
+#   2. an address on a domain you've verified in Resend (e.g. noreply@lifepriority.com)
+NOTIFY_FROM=Greg's Site <onboarding@resend.dev>
+
+# --- Optional ---
+# Override the public origin used in Stripe success/cancel URLs.
 # PUBLIC_BASE_URL=https://gregpryor.com

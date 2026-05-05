@@ -11,6 +11,7 @@ import MyTake from "./components/mytake.jsx";
 import Podcast from "./components/podcast.jsx";
 import Footer from "./components/footer.jsx";
 import CheckoutBanner from "./components/checkout-banner.jsx";
+import Analytics from "./components/analytics.jsx";
 
 export default function App() {
   const ids = NAV_ITEMS.map((n) => n.id);
@@ -19,6 +20,7 @@ export default function App() {
 
   return (
     <>
+      <Analytics />
       <ScrollProgress />
       <CheckoutBanner />
       <Nav active={active} />

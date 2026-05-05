@@ -43,6 +43,12 @@ SPOTIFY_USER_ID=
 # Without it, we just take the first 4 public playlists.
 # SPOTIFY_PLAYLIST_IDS=37i9dQZF1DX...,...,...,...
 
+# --- Google Analytics (optional) ---
+# Build-time var: must be prefixed VITE_ so it gets inlined into the client
+# bundle. Without it, no GA script loads at all (no cookies, no tracking).
+# Get from analytics.google.com -> Admin -> Data Streams -> Web
+# VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
 # --- Optional ---
 # Override the public origin used in Stripe success/cancel URLs.
 # PUBLIC_BASE_URL=https://gregpryor.com

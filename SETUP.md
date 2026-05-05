@@ -131,7 +131,36 @@ Spotify account)
 
 ---
 
-## 5. Custom domain (optional but recommended)
+## 5. Google Analytics — page-view tracking
+
+**Account:** https://analytics.google.com
+
+**To do:**
+- [ ] Sign in (use Greg's Google account, or yours if you'll be the analytics admin)
+- [ ] **Admin → Create → Account** → name it "Greg Pryor"
+- [ ] Inside that account: **Create → Property** → name it "Greg Pryor Site"
+      → set time zone + currency
+- [ ] **Data streams → Add stream → Web** → enter the live URL
+      (e.g. `https://gregpryor.com`) and a stream name
+- [ ] Copy the **Measurement ID** at the top right — it starts with `G-`
+- [ ] *(Recommended)* Set the data retention to 14 months under
+      Admin → Data Settings → Data Retention
+
+**Cloudflare env var:**
+| Variable | Value | Encrypt |
+|---|---|---|
+| `VITE_GA_MEASUREMENT_ID` | `G-XXXXXXXXXX` |   |
+
+> The `VITE_` prefix matters — that's what tells the build to inline the value
+> into the client bundle. After adding the var, click **Retry deployment**
+> (build-time vars don't apply to the existing build).
+>
+> Without this var, no GA script is loaded at all — no cookies, no requests
+> to googletagmanager.com, nothing. Setting it later just turns tracking on.
+
+---
+
+## 6. Custom domain (optional but recommended)
 
 Right now the site lives at `greg.maxroper-greg.workers.dev` (or similar
 auto-generated URL). For a real launch you want `gregpryor.com`.
@@ -163,6 +192,7 @@ auto-generated URL). For a real launch you want `gregpryor.com`.
 | `SPOTIFY_CLIENT_SECRET` | Music section | ✓ | Spotify app credentials |
 | `SPOTIFY_USER_ID` | Music section |   | Greg's Spotify username |
 | `SPOTIFY_PLAYLIST_IDS` | Music section *(optional)* |   | Pin exactly which 4 playlists to show |
+| `VITE_GA_MEASUREMENT_ID` | Google Analytics |   | GA4 measurement ID (`G-…`); build-time var |
 | `PUBLIC_BASE_URL` | Stripe URLs *(optional)* |   | Override origin for Stripe redirects |
 
 > Without any of these set, the site still works — every API endpoint falls

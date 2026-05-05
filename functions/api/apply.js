@@ -39,6 +39,56 @@ export async function onRequestPost({ request, env }) {
 
   if (env.RESEND_API_KEY) {
     try {
+      const groupLabel =
+        payload.group === "1" ? "1 person" :
+        payload.group === "2" ? "2 people" :
+        payload.group || "—";
+
+      const fields = [
+        { label: "Name",          value: payload.name },
+        { label: "Email",         value: payload.email },
+        { label: "Game date",     value: payload.date },
+        { label: "Party size",    value: groupLabel },
+      ];
+
+      const longFields = [
+        { label: "Why they want to come", value: payload.about },
+        { label: "How they found Greg",   value: payload.how || "—" },
+      ];
+
+      const text = [
+        "New Diamond Club seat application",
+        "================================",
+        "",
+        ...fields.map((f) => `${f.label}: ${f.value || "—"}`),
+        "",
+        ...longFields.flatMap((f) => [`${f.label}:`, f.value, ""]),
+        `Submitted: ${payload.receivedAt}`,
+        "",
+        "Reply to this email to respond directly to the applicant.",
+      ].join("\n");
+
+      const html = `
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:560px;color:#0a1929">
+  <h2 style="margin:0 0 4px;font-size:18px">New Diamond Club seat application</h2>
+  <p style="margin:0 0 20px;color:#5a6a7a;font-size:13px">Submitted ${escapeHtml(payload.receivedAt)}</p>
+  <table style="width:100%;border-collapse:collapse;font-size:14px">
+    ${fields.map((f) => `
+      <tr>
+        <td style="padding:8px 12px 8px 0;color:#5a6a7a;width:120px;vertical-align:top">${escapeHtml(f.label)}</td>
+        <td style="padding:8px 0;font-weight:500">${escapeHtml(f.value || "—")}</td>
+      </tr>`).join("")}
+  </table>
+  ${longFields.map((f) => `
+    <div style="margin-top:20px">
+      <div style="color:#5a6a7a;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">${escapeHtml(f.label)}</div>
+      <div style="white-space:pre-wrap;line-height:1.5;font-size:14px">${escapeHtml(f.value)}</div>
+    </div>`).join("")}
+  <p style="margin-top:24px;padding-top:16px;border-top:1px solid #e6e6e6;color:#5a6a7a;font-size:12px">
+    Hit reply to respond directly to ${escapeHtml(payload.name)}.
+  </p>
+</div>`.trim();
+
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -49,19 +99,9 @@ export async function onRequestPost({ request, env }) {
           from: env.NOTIFY_FROM || "Greg's Site <onboarding@resend.dev>",
           to: env.NOTIFY_TO || "gpryor@lifepriority.com",
           reply_to: payload.email || undefined,
-          subject: `Diamond Club application - ${payload.name} (${payload.date})`,
-          text: [
-            `Name: ${payload.name}`,
-            `Email: ${payload.email}`,
-            `Date: ${payload.date}`,
-            `Group size: ${payload.group}`,
-            "",
-            `Why they want to come:`,
-            payload.about,
-            "",
-            `How they found Greg: ${payload.how || "-"}`,
-            `Submitted: ${payload.receivedAt}`,
-          ].join("\n"),
+          subject: `Diamond Club application — ${payload.name} (${payload.date}, ${groupLabel})`,
+          text,
+          html,
         }),
       });
       if (!res.ok) console.error("Resend non-2xx", res.status, await res.text());
@@ -71,6 +111,15 @@ export async function onRequestPost({ request, env }) {
   }
 
   return json({ ok: true });
+}
+
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function json(obj, status = 200) {

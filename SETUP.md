@@ -30,6 +30,7 @@ deployment** so they bind to a fresh build.
 | Variable | Value | Encrypt |
 |---|---|---|
 | `STRIPE_SECRET_KEY` | `sk_live_…` (or `sk_test_…` to start) | ✓ |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | `pk_live_…` (or `pk_test_…`) — meant to be public, do **not** encrypt |   |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_…` from the webhook page | ✓ |
 
 ---
@@ -181,7 +182,8 @@ auto-generated URL). For a real launch you want `gregpryor.com`.
 
 | Variable | Required by | Encrypt? | What it's for |
 |---|---|---|---|
-| `STRIPE_SECRET_KEY` | Stripe checkout | ✓ | Creating Checkout Sessions |
+| `STRIPE_SECRET_KEY` | Stripe checkout | ✓ | Creating Checkout Sessions (server-side) |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe embedded checkout |   | Client-side; build-time inlined into the bundle |
 | `STRIPE_WEBHOOK_SECRET` | Stripe order alerts | ✓ | Verifying webhook signatures |
 | `RESEND_API_KEY` | All email notifications | ✓ | Sending emails via Resend |
 | `NOTIFY_TO` | All email notifications |   | Where Greg gets emails (default `gpryor@lifepriority.com`) |

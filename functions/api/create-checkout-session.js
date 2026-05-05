@@ -84,8 +84,10 @@ export async function onRequestPost({ request, env }) {
 
   const params = new URLSearchParams();
   params.append("mode", "payment");
-  params.append("success_url", `${origin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`);
-  params.append("cancel_url", `${origin}/?checkout=cancel`);
+  params.append("ui_mode", "embedded");
+  // Embedded mode does a full-page redirect to return_url after a successful
+  // payment. Cancellation just closes the iframe — no redirect.
+  params.append("return_url", `${origin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`);
   params.append("customer_email", sanitize(contact.email, 254));
   params.append("billing_address_collection", "required");
   params.append("phone_number_collection[enabled]", "true");
@@ -138,7 +140,7 @@ export async function onRequestPost({ request, env }) {
     return json({ error: data.error?.message || "Stripe API error" }, 502);
   }
 
-  return json({ url: data.url, id: data.id });
+  return json({ client_secret: data.client_secret, id: data.id });
 }
 
 function clampInt(v, min, max) {

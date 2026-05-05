@@ -2,12 +2,17 @@
 # .dev.vars is gitignored. Never commit real keys.
 
 # --- Stripe (required for checkout) ---
-# Get test key from https://dashboard.stripe.com/test/apikeys
-# Format: sk_test_<your-secret-key>
+# Get test keys from https://dashboard.stripe.com/test/apikeys
+
+# Server-side secret key (sk_test_... or sk_live_...). Encrypt in production.
 STRIPE_SECRET_KEY=
 
+# Build-time publishable key (pk_test_... or pk_live_...). Safe to expose;
+# this gets inlined into the client bundle so the embedded checkout iframe
+# can talk to Stripe.
+VITE_STRIPE_PUBLISHABLE_KEY=
+
 # Webhook signing secret from Stripe Dashboard > Developers > Webhooks
-# Format: whsec_<your-signing-secret>
 STRIPE_WEBHOOK_SECRET=
 
 # --- Email notifications (optional) ---

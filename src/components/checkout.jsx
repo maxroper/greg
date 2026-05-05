@@ -1,10 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 
 // Checkout — multi-step purchase flow.
 // Steps 1–3: edition / personalize / shipping (collected client-side).
-// Step 4: redirect to Stripe Checkout (hosted page) for PCI-compliant payment.
-// On return, Stripe redirects back to /?checkout=success which the App can react to.
+// Step 4: Stripe Embedded Checkout iframe (PCI-compliant; card data goes
+//   directly to Stripe but never leaves the page UI). On success, Stripe
+//   redirects the parent page to /?checkout=success.
+
+// Lazy-load Stripe.js once for the whole app (this returns a Promise; the
+// EmbeddedCheckoutProvider awaits it). Safe to call before VITE_STRIPE_PUBLISHABLE_KEY
+// is set — loadStripe(undefined) returns a no-op promise that the provider handles.
+const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = STRIPE_PK ? loadStripe(STRIPE_PK) : null;
 export default function Checkout({ open, initialEdition, onClose }) {
   const [step, setStep] = useState(1);
   const [edition, setEdition] = useState(initialEdition || "signed");
@@ -19,6 +28,7 @@ export default function Checkout({ open, initialEdition, onClose }) {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [summaryOpen, setSummaryOpen] = useState(false);
+  const [clientSecret, setClientSecret] = useState(null);
 
   useEffect(() => {
     if (open) {
@@ -27,6 +37,7 @@ export default function Checkout({ open, initialEdition, onClose }) {
       setQuantity(1);
       setProcessing(false);
       setError("");
+      setClientSecret(null);
     }
   }, [open, initialEdition]);
 
@@ -56,12 +67,22 @@ export default function Checkout({ open, initialEdition, onClose }) {
   const tax = +(subtotal * 0.082).toFixed(2);
   const total = +(subtotal + ship + tax).toFixed(2);
 
-  const goNext = () => setStep(s => Math.min(4, s + 1));
-  const goBack = () => setStep(s => Math.max(1, s - 1));
-
-  const submit = async () => {
-    setProcessing(true);
+  const goBack = () => {
     setError("");
+    if (step === 4) setClientSecret(null);
+    setStep((s) => Math.max(1, s - 1));
+  };
+
+  const goNext = async () => {
+    setError("");
+    // Steps 1, 2 advance straight to the next page.
+    if (step < 3) {
+      setStep((s) => s + 1);
+      return;
+    }
+    // Step 3 -> 4 also creates the Stripe session and prepares the embedded
+    // checkout iframe with the resulting client_secret.
+    setProcessing(true);
     try {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -69,7 +90,6 @@ export default function Checkout({ open, initialEdition, onClose }) {
         body: JSON.stringify({
           edition, quantity, personalize, recipient, inscription,
           addBall, ballInscription, shipMethod, contact,
-          // Server recomputes amounts; we send display prices for sanity-check only.
           displayTotal: total,
         }),
       });
@@ -78,11 +98,13 @@ export default function Checkout({ open, initialEdition, onClose }) {
         throw new Error(data.error || `Checkout failed (${res.status})`);
       }
       const data = await res.json();
-      if (!data.url) throw new Error("No checkout URL returned.");
-      window.location.assign(data.url);
+      if (!data.client_secret) throw new Error("No client_secret returned.");
+      setClientSecret(data.client_secret);
+      setStep(4);
     } catch (err) {
       console.error("Checkout error", err);
       setError(err.message || "Something went wrong. Please try again.");
+    } finally {
       setProcessing(false);
     }
   };
@@ -328,53 +350,23 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
             {step === 4 && (
               <div className="ck-pane">
-                <h3 className="ck-h">Pay securely with Stripe.</h3>
-                <p className="ck-lede">
-                  When you click <strong>Pay with Stripe</strong>, you'll go to Stripe's secure
-                  payment page to enter your card. Greg never sees your card number — just
-                  the order details.
-                </p>
-
-                <div className="ck-stripe-card">
-                  <div className="ck-stripe-badge">
-                    <svg width="50" height="22" viewBox="0 0 60 25" aria-label="Stripe">
-                      <text x="0" y="19" fontFamily="-apple-system, sans-serif" fontWeight="700" fontSize="20" fill="#635bff">stripe</text>
-                    </svg>
-                    <span className="mono">SECURE · 256-BIT</span>
+                {!stripePromise ? (
+                  <div className="ck-error">
+                    Stripe isn't configured yet. Set <code>VITE_STRIPE_PUBLISHABLE_KEY</code> in
+                    Cloudflare and redeploy.
                   </div>
-
-                  <div className="ck-stripe-summary">
-                    <div className="ck-stripe-summary-row">
-                      <span>{quantity > 1 ? `${quantity} × ` : ""}{editions[edition].name}</span>
-                      <span className="mono">${editionLineTotal.toFixed(2)}</span>
-                    </div>
-                    {addBall && (
-                      <div className="ck-stripe-summary-row">
-                        <span>Signed MLB ball</span>
-                        <span className="mono">$89.00</span>
-                      </div>
-                    )}
-                    <div className="ck-stripe-summary-row">
-                      <span>Shipping ({shipMethod === "express" ? "Express" : "Standard"})</span>
-                      <span className="mono">{ship === 0 ? "FREE" : `$${ship.toFixed(2)}`}</span>
-                    </div>
-                    <div className="ck-stripe-summary-row">
-                      <span>Tax (est.)</span>
-                      <span className="mono">${tax.toFixed(2)}</span>
-                    </div>
-                    <div className="ck-stripe-summary-row ck-stripe-summary-total">
-                      <span>Total</span>
-                      <span className="mono">${total.toFixed(2)}</span>
-                    </div>
+                ) : clientSecret ? (
+                  <div className="ck-embedded">
+                    <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
+                      <EmbeddedCheckout />
+                    </EmbeddedCheckoutProvider>
                   </div>
-
-                  {error && <div className="ck-error">{error}</div>}
-                </div>
-
-                <div className="ck-trust">
-                  <span className="ck-trust-i">🔒</span>
-                  <span>Your payment is processed by Stripe. We never store your card number on our servers.</span>
-                </div>
+                ) : (
+                  <div className="ck-stripe-loading">
+                    <span className="ck-spinner" aria-hidden /> Preparing payment…
+                  </div>
+                )}
+                {error && <div className="ck-error" style={{ marginTop: 16 }}>{error}</div>}
               </div>
             )}
           </div>
@@ -469,25 +461,28 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
           <div className="ck-foot-r">
             <div className="ck-foot-total mono">
-              {step < 4 ? <>Total <span className="ck-foot-amt">${total.toFixed(2)}</span></> : <>Charge <span className="ck-foot-amt">${total.toFixed(2)}</span></>}
+              Total <span className="ck-foot-amt">${total.toFixed(2)}</span>
             </div>
             {step < 4 && (
               <button
                 className="ck-btn-next"
                 onClick={goNext}
-                disabled={(step === 1 && !step1Valid) || (step === 2 && !step2Valid) || (step === 3 && !step3Valid)}
+                disabled={
+                  processing ||
+                  (step === 1 && !step1Valid) ||
+                  (step === 2 && !step2Valid) ||
+                  (step === 3 && !step3Valid)
+                }
               >
-                {step === 1 ? "Personalize" : step === 2 ? "Shipping" : "Payment"} <span aria-hidden>→</span>
+                {processing && step === 3 ? (
+                  <><span className="ck-spinner" aria-hidden /> Loading…</>
+                ) : (
+                  <>{step === 1 ? "Personalize" : step === 2 ? "Shipping" : "Payment"} <span aria-hidden>→</span></>
+                )}
               </button>
             )}
             {step === 4 && (
-              <button className="ck-btn-pay" onClick={submit} disabled={processing}>
-                {processing ? (
-                  <><span className="ck-spinner" aria-hidden /> Redirecting…</>
-                ) : (
-                  <>Pay with Stripe <span aria-hidden>→</span></>
-                )}
-              </button>
+              <span className="ck-foot-note mono">Card entry below ↓</span>
             )}
           </div>
         </div>
@@ -706,6 +701,27 @@ ckStyles.textContent = `
 .ck-ship input { accent-color: var(--royal-blue-glow); margin: 0; }
 .ck-ship-name { font-family: var(--sans); font-size: 14px; color: var(--bone); font-weight: 500; }
 .ck-ship-sub { font-family: var(--serif); font-size: 13px; color: var(--bone-dim); font-style: italic; margin-top: 2px; }
+
+.ck-embedded {
+  background: var(--bone);
+  border: 1px solid var(--rule);
+  padding: 14px;
+  min-height: 480px;
+  border-radius: 4px;
+}
+.ck-embedded > * { width: 100%; }
+.ck-stripe-loading {
+  display: flex; align-items: center; gap: 12px;
+  padding: 32px;
+  border: 1px solid var(--rule);
+  background: rgba(0,0,0,0.2);
+  color: var(--bone-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.ck-stripe-loading .ck-spinner { border-color: rgba(245,244,232,0.3); border-top-color: var(--bone); }
 
 .ck-stripe-card { border: 1px solid var(--rule); background: rgba(0,0,0,0.2); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .ck-stripe-badge { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }

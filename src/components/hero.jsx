@@ -93,8 +93,8 @@ export default function Hero() {
             <span className="hero-stat-num">789</span>
             <span className="hero-stat-lbl">GAMES</span>
           </div>
-          <div className="hero-strip-sep" />
-          <div className="hero-stat">
+          <div className="hero-strip-sep hero-strip-sep-minors" />
+          <div className="hero-stat hero-stat-minors">
             <span className="hero-stat-num">6</span>
             <span className="hero-stat-lbl">YEARS IN THE MINORS</span>
           </div>
@@ -394,6 +394,9 @@ heroStyles.textContent = `
   .hero-stat-num { font-size: 26px; }
 }
 @media (max-width: 768px) {
+  /* Drop the "Years in the minors" stat on phones — three stats fit, four don't. */
+  .hero-stat-minors, .hero-strip-sep-minors { display: none; }
+
   .hero {
     padding: 80px 0 0;
     height: 100vh;

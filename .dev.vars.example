@@ -23,6 +23,15 @@ NOTIFY_TO=gpryor@lifepriority.com
 #   2. an address on a domain you've verified in Resend (e.g. noreply@lifepriority.com)
 NOTIFY_FROM=Greg's Site <onboarding@resend.dev>
 
+# --- Facebook posts (optional) ---
+# Without these the Facebook section uses a static fallback. To pull real posts:
+#   1. Create a Meta app at https://developers.facebook.com/apps
+#   2. Generate a long-lived Page Access Token for the GregPryor85 page
+#      (see README for the exact steps)
+#   3. Paste the token here.
+FB_PAGE_ID=GregPryor85
+FB_PAGE_ACCESS_TOKEN=
+
 # --- Optional ---
 # Override the public origin used in Stripe success/cancel URLs.
 # PUBLIC_BASE_URL=https://gregpryor.com

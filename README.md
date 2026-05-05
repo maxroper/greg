@@ -94,6 +94,35 @@ The repo is structured so Cloudflare Pages auto-deploys on every push to `main`.
    Copy the signing secret (starts with `whsec_`) and paste it into the
    Cloudflare `STRIPE_WEBHOOK_SECRET` env var. Without this, orders still
    process but Greg won't get an email per order.
+7. **Facebook live posts (optional).**
+   Without setup, the Facebook section uses a static fallback. To pull real
+   posts from `@GregPryor85`:
+   1. Go to https://developers.facebook.com/apps → **Create App** → "Other" →
+      "Business" → name it (e.g. "Greg Pryor Site").
+   2. In the app dashboard go to **Tools → Graph API Explorer**.
+   3. Top right, "Meta App" dropdown → select your new app.
+   4. "User or Page" dropdown → **User Token** → click **Generate Access Token**,
+      grant `pages_show_list`, `pages_read_engagement`, `pages_read_user_content`.
+   5. Switch the dropdown to **Page Token** → pick the **Greg Pryor 85** page.
+      Copy the token shown.
+   6. **Make it long-lived.** That token expires in an hour. Run, replacing
+      `<short_token>` and `<app_id>`/`<app_secret>` (from app dashboard → Settings → Basic):
+      ```bash
+      curl "https://graph.facebook.com/v23.0/oauth/access_token?grant_type=fb_exchange_token&client_id=<app_id>&client_secret=<app_secret>&fb_exchange_token=<short_token>"
+      ```
+      That returns a 60-day user token. Then call this with the user token to
+      get a never-expiring Page Token:
+      ```bash
+      curl "https://graph.facebook.com/v23.0/me/accounts?access_token=<long_user_token>"
+      ```
+      Find Greg Pryor 85 in the response, copy its `access_token`.
+   7. Add the Cloudflare env vars:
+      ```
+      FB_PAGE_ID            = GregPryor85          (or the numeric page ID)
+      FB_PAGE_ACCESS_TOKEN  = <never-expiring page token>     (Encrypt)
+      ```
+   Posts are cached at the edge for 10 minutes so the page stays fast and we
+   don't hit Graph API rate limits.
 
 After step 1 every `git push origin main` produces a production deploy; pushes to
 other branches produce preview deploys with a unique URL — useful for review.

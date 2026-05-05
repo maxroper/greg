@@ -8,12 +8,14 @@ import * as createCheckoutSession from "./functions/api/create-checkout-session.
 import * as apply from "./functions/api/apply.js";
 import * as speakingRequest from "./functions/api/speaking-request.js";
 import * as stripeWebhook from "./functions/api/stripe-webhook.js";
+import * as facebookPosts from "./functions/api/facebook-posts.js";
 
 const ROUTES = {
   "/api/create-checkout-session": createCheckoutSession,
   "/api/apply": apply,
   "/api/speaking-request": speakingRequest,
   "/api/stripe-webhook": stripeWebhook,
+  "/api/facebook-posts": facebookPosts,
 };
 
 export default {

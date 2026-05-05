@@ -1,12 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Reveal, Eyebrow, Btn } from "./primitives.jsx";
 import { ASSETS, PRYOR_STATS, PLAYLISTS, FB_POSTS, FB_PAGE_URL } from "../data.js";
 import RequestDateModal from "./request-date-modal.jsx";
+
+// Fetched once for all <About> instances on the page; ref-counted so we don't
+// spam /api/facebook-posts on every render.
+let fbPostsCache = null;
+function useFacebookPosts(enabled) {
+  const [posts, setPosts] = useState(fbPostsCache?.posts || null);
+  useEffect(() => {
+    if (!enabled) return;
+    if (fbPostsCache) { setPosts(fbPostsCache.posts); return; }
+    let cancelled = false;
+    fetch("/api/facebook-posts")
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data) => {
+        if (cancelled) return;
+        const next = Array.isArray(data?.posts) && data.posts.length > 0 ? data.posts : FB_POSTS;
+        fbPostsCache = { posts: next };
+        setPosts(next);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        fbPostsCache = { posts: FB_POSTS };
+        setPosts(FB_POSTS);
+      });
+    return () => { cancelled = true; };
+  }, [enabled]);
+  return posts;
+}
 
 export default function About({ show }) {
   const visible = (k) => !show || show.includes(k);
   const [statTab, setStatTab] = useState("highlights");
   const [requestOpen, setRequestOpen] = useState(false);
+  const fbPosts = useFacebookPosts(visible("facebook"));
 
   const isIntro = visible("intro");
   const sectionId = isIntro ? "about" : null;
@@ -340,25 +368,42 @@ export default function About({ show }) {
             </div>
 
             <div className="fb-grid">
-              {FB_POSTS.map((p, i) => (
-                <Reveal key={p.id} delay={i * 100}>
-                  <a className="fb-card" href={FB_PAGE_URL} target="_blank" rel="noopener noreferrer">
-                    <div className="fb-card-head">
-                      <div className="fb-card-avatar">GP</div>
-                      <div className="fb-card-meta">
-                        <div className="fb-card-name">Greg Pryor</div>
-                        <div className="fb-card-when mono">{p.when} · <span className="fb-card-tag">{p.tag}</span></div>
+              {(fbPosts || Array.from({ length: 3 })).map((p, i) =>
+                p ? (
+                  <Reveal key={p.id || i} delay={i * 100}>
+                    <a className="fb-card" href={p.permalink || FB_PAGE_URL} target="_blank" rel="noopener noreferrer">
+                      <div className="fb-card-head">
+                        <div className="fb-card-avatar">GP</div>
+                        <div className="fb-card-meta">
+                          <div className="fb-card-name">Greg Pryor</div>
+                          <div className="fb-card-when mono">{p.when} · <span className="fb-card-tag">{p.tag}</span></div>
+                        </div>
                       </div>
+                      <p className="fb-card-text">{p.text}</p>
+                      <div className="fb-card-stats mono">
+                        <span><strong>{p.likes}</strong> likes</span>
+                        <span><strong>{p.comments}</strong> comments</span>
+                        <span><strong>{p.shares}</strong> shares</span>
+                      </div>
+                    </a>
+                  </Reveal>
+                ) : (
+                  <Reveal key={`sk-${i}`} delay={i * 100}>
+                    <div className="fb-card fb-card-skeleton" aria-hidden>
+                      <div className="fb-card-head">
+                        <div className="fb-card-avatar">GP</div>
+                        <div className="fb-card-meta">
+                          <div className="fb-sk-bar fb-sk-bar-name" />
+                          <div className="fb-sk-bar fb-sk-bar-when" />
+                        </div>
+                      </div>
+                      <div className="fb-sk-bar fb-sk-bar-line" />
+                      <div className="fb-sk-bar fb-sk-bar-line" />
+                      <div className="fb-sk-bar fb-sk-bar-line fb-sk-bar-short" />
                     </div>
-                    <p className="fb-card-text">{p.text}</p>
-                    <div className="fb-card-stats mono">
-                      <span><strong>{p.likes}</strong> likes</span>
-                      <span><strong>{p.comments}</strong> comments</span>
-                      <span><strong>{p.shares}</strong> shares</span>
-                    </div>
-                  </a>
-                </Reveal>
-              ))}
+                  </Reveal>
+                )
+              )}
             </div>
 
             <div className="fb-cta-row">
@@ -576,6 +621,25 @@ aboutStyles.textContent = `
 
 .fb-card-stats { display: flex; gap: 16px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 11px; letter-spacing: 0.06em; color: var(--bone-dim); flex-wrap: wrap; }
 .fb-card-stats strong { color: var(--bone); font-weight: 600; }
+
+.fb-card-skeleton { pointer-events: none; }
+.fb-sk-bar {
+  display: block;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 200% 100%;
+  animation: fbShimmer 1.6s ease-in-out infinite;
+  margin: 6px 0;
+}
+.fb-sk-bar-name { width: 80px; height: 14px; }
+.fb-sk-bar-when { width: 120px; height: 10px; opacity: 0.7; }
+.fb-sk-bar-line { width: 100%; margin-top: 8px; }
+.fb-sk-bar-short { width: 65%; }
+@keyframes fbShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 .fb-cta-row { display: flex; justify-content: center; }
 .fb-cta { display: inline-flex; align-items: center; gap: 12px; padding: 16px 28px; background: #1877f2; color: #fff; font-family: var(--sans); font-size: 15px; font-weight: 600; border-radius: 8px; transition: all 200ms; text-decoration: none; }

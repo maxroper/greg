@@ -32,6 +32,17 @@ NOTIFY_FROM=Greg's Site <onboarding@resend.dev>
 FB_PAGE_ID=GregPryor85
 FB_PAGE_ACCESS_TOKEN=
 
+# --- Spotify playlists (optional) ---
+# Without these the music section uses 4 static placeholder playlists.
+# Get keys from https://developer.spotify.com/dashboard
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
+# Greg's username (e.g. "gregpryor4" — find at open.spotify.com/user/<username>)
+SPOTIFY_USER_ID=
+# Optional: pin a specific 4 playlists by ID (comma-separated).
+# Without it, we just take the first 4 public playlists.
+# SPOTIFY_PLAYLIST_IDS=37i9dQZF1DX...,...,...,...
+
 # --- Optional ---
 # Override the public origin used in Stripe success/cancel URLs.
 # PUBLIC_BASE_URL=https://gregpryor.com

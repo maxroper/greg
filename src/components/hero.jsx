@@ -208,10 +208,52 @@ heroStyles.textContent = `
   position: relative;
   animation: heroFourBreathe 6s ease-in-out infinite;
 }
+.hero-four-num::before {
+  content: "4";
+  position: absolute;
+  inset: 0;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.5px rgba(43, 138, 255, 0.9);
+  filter: blur(0.5px) drop-shadow(0 0 18px rgba(43, 138, 255, 0.55));
+  background: linear-gradient(180deg,
+    transparent 0%,
+    transparent var(--sweep-start, 0%),
+    rgba(43, 138, 255, 1) var(--sweep-mid, 50%),
+    transparent var(--sweep-end, 100%),
+    transparent 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  mask-image: linear-gradient(180deg,
+    transparent 0%,
+    transparent var(--sweep-start, 0%),
+    black var(--sweep-mid, 50%),
+    transparent var(--sweep-end, 100%),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(180deg,
+    transparent 0%,
+    transparent var(--sweep-start, 0%),
+    black var(--sweep-mid, 50%),
+    transparent var(--sweep-end, 100%),
+    transparent 100%
+  );
+  animation: heroFourSweep 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
 @keyframes heroFourBreathe {
   0%, 100% { filter: drop-shadow(0 0 40px rgba(43, 138, 255, 0.12)); }
   50%      { filter: drop-shadow(0 0 60px rgba(43, 138, 255, 0.32)); }
 }
+@keyframes heroFourSweep {
+  0%   { --sweep-start: -20%; --sweep-mid: 0%;   --sweep-end: 20%;  opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { --sweep-start: 80%;  --sweep-mid: 100%; --sweep-end: 120%; opacity: 0; }
+}
+@property --sweep-start { syntax: "<percentage>"; inherits: false; initial-value: -20%; }
+@property --sweep-mid   { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@property --sweep-end   { syntax: "<percentage>"; inherits: false; initial-value: 20%; }
 .hero-four-circle {
   position: absolute;
   width: 88%; height: 88%;

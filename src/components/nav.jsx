@@ -23,7 +23,6 @@ export default function Nav({ active }) {
         <a className="nav-brand" href="#hero" onClick={(e) => { e.preventDefault(); go("hero"); }}>
           <span className="nav-mark">GP</span>
           <span className="nav-name">Greg Pryor</span>
-          <span className="nav-num mono">№ 4</span>
         </a>
         <ul className="nav-links">
           {NAV_ITEMS.slice(1).map((it) => (

@@ -11,3 +11,4 @@ dist
 # Design handoff bundle (kept locally, not committed)
 design.tar.gz
 design/
+.claude/scheduled_tasks*

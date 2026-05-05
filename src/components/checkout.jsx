@@ -1,19 +1,160 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { loadStripe } from "@stripe/stripe-js";
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  ExpressCheckoutElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+
+// Inner payment form, mounted inside <Elements> so it can use Stripe's hooks.
+// Handles both express buttons (Apple Pay / Google Pay / Link) at the top
+// and the card form below — both call confirmPayment with our return URL.
+function PaymentForm({ total, contact, onError }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [submitting, setSubmitting] = useState(false);
+  const [hasExpress, setHasExpress] = useState(false);
+
+  const returnUrl = `${window.location.origin}/?checkout=success`;
+
+  const handleCardSubmit = async () => {
+    if (!stripe || !elements) return;
+    onError("");
+    setSubmitting(true);
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: returnUrl,
+        payment_method_data: {
+          billing_details: {
+            name: contact.name,
+            email: contact.email,
+            address: {
+              line1: contact.address1,
+              city: contact.city,
+              state: contact.state,
+              postal_code: contact.zip,
+              country: "US",
+            },
+          },
+        },
+      },
+    });
+    if (error) {
+      onError(error.message || "Payment failed.");
+      setSubmitting(false);
+    }
+  };
+
+  const handleExpressConfirm = async (event) => {
+    if (!stripe || !elements) return;
+    onError("");
+    const { error: submitError } = await elements.submit();
+    if (submitError) { onError(submitError.message || "Payment failed."); return; }
+    const { error } = await stripe.confirmPayment({
+      elements,
+      clientSecret: undefined, // Stripe pulls it from Elements options
+      confirmParams: { return_url: returnUrl },
+    });
+    if (error) onError(error.message || "Payment failed.");
+  };
+
+  return (
+    <div className="ck-elements">
+      <ExpressCheckoutElement
+        onReady={({ availablePaymentMethods }) => {
+          setHasExpress(!!availablePaymentMethods && Object.keys(availablePaymentMethods).length > 0);
+        }}
+        onConfirm={handleExpressConfirm}
+        options={{ buttonHeight: 48 }}
+      />
+      {hasExpress && (
+        <div className="ck-elements-divider"><span>or pay with card</span></div>
+      )}
+      <PaymentElement options={{ layout: "tabs" }} />
+      <button
+        type="button"
+        className="ck-btn-pay-elements"
+        onClick={handleCardSubmit}
+        disabled={!stripe || submitting}
+      >
+        {submitting ? (
+          <><span className="ck-spinner" aria-hidden /> Processing…</>
+        ) : (
+          <>Pay ${total.toFixed(2)}</>
+        )}
+      </button>
+    </div>
+  );
+}
 
 // Checkout — multi-step purchase flow.
 // Steps 1–3: edition / personalize / shipping (collected client-side).
-// Step 4: Stripe Embedded Checkout iframe (PCI-compliant; card data goes
-//   directly to Stripe but never leaves the page UI). On success, Stripe
-//   redirects the parent page to /?checkout=success.
+// Step 4: Stripe Payment Element rendered inline with the site's dark theme.
+//   Card fields are still iframed (PCI-compliant) but laid out by us so the
+//   form looks native. ExpressCheckoutElement adds Apple Pay / Google Pay /
+//   Link buttons at the top when the visitor's browser supports them and
+//   the domain is registered in Stripe.
 
-// Lazy-load Stripe.js once for the whole app (this returns a Promise; the
-// EmbeddedCheckoutProvider awaits it). Safe to call before VITE_STRIPE_PUBLISHABLE_KEY
-// is set — loadStripe(undefined) returns a no-op promise that the provider handles.
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = STRIPE_PK ? loadStripe(STRIPE_PK) : null;
+
+// Theme tokens for the embedded form. Matches the navy/gold palette so the
+// inputs feel like part of the site, not a third-party widget.
+const STRIPE_APPEARANCE = {
+  theme: "night",
+  variables: {
+    colorPrimary: "#bd9b60",
+    colorBackground: "#0a1929",
+    colorText: "#f4f1ea",
+    colorTextSecondary: "#e8e3d6",
+    colorTextPlaceholder: "rgba(232, 227, 214, 0.45)",
+    colorDanger: "#c8102e",
+    colorSuccess: "#2b8a4e",
+    fontFamily: "Bricolage Grotesque, -apple-system, BlinkMacSystemFont, sans-serif",
+    fontSizeBase: "15px",
+    spacingUnit: "4px",
+    borderRadius: "4px",
+    focusBoxShadow: "0 0 0 1px #2b8aff",
+  },
+  rules: {
+    ".Input": {
+      backgroundColor: "rgba(0, 0, 0, 0.3)",
+      border: "1px solid rgba(189, 155, 96, 0.22)",
+      padding: "12px 14px",
+    },
+    ".Input:focus": {
+      borderColor: "#2b8aff",
+      boxShadow: "0 0 0 1px #2b8aff",
+    },
+    ".Label": {
+      fontFamily: "JetBrains Mono, ui-monospace, monospace",
+      fontSize: "10px",
+      letterSpacing: "0.22em",
+      textTransform: "uppercase",
+      color: "#bd9b60",
+      marginBottom: "6px",
+    },
+    ".Tab": {
+      backgroundColor: "rgba(0, 0, 0, 0.2)",
+      border: "1px solid rgba(189, 155, 96, 0.22)",
+    },
+    ".Tab--selected": {
+      borderColor: "#2b8aff",
+      boxShadow: "0 0 0 1px #2b8aff",
+    },
+  },
+};
+
+const STRIPE_ELEMENTS_OPTIONS_BASE = {
+  appearance: STRIPE_APPEARANCE,
+  fonts: [
+    { cssSrc: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" },
+  ],
+};
 export default function Checkout({ open, initialEdition, onClose }) {
   const [step, setStep] = useState(1);
   const [edition, setEdition] = useState(initialEdition || "signed");
@@ -75,22 +216,20 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
   const goNext = async () => {
     setError("");
-    // Steps 1, 2 advance straight to the next page.
     if (step < 3) {
       setStep((s) => s + 1);
       return;
     }
-    // Step 3 -> 4 also creates the Stripe session and prepares the embedded
-    // checkout iframe with the resulting client_secret.
+    // Step 3 -> 4: create a PaymentIntent with the trusted total, hand the
+    // client_secret to <Elements> on step 4 so the inline payment form renders.
     setProcessing(true);
     try {
-      const res = await fetch("/api/create-checkout-session", {
+      const res = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           edition, quantity, personalize, recipient, inscription,
           addBall, ballInscription, shipMethod, contact,
-          displayTotal: total,
         }),
       });
       if (!res.ok) {
@@ -350,17 +489,27 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
             {step === 4 && (
               <div className="ck-pane">
+                <h3 className="ck-h">Payment</h3>
+                <p className="ck-lede">
+                  Card data goes directly to Stripe — Greg never sees it.
+                  Apple Pay and Google Pay appear here when supported.
+                </p>
                 {!stripePromise ? (
                   <div className="ck-error">
                     Stripe isn't configured yet. Set <code>VITE_STRIPE_PUBLISHABLE_KEY</code> in
-                    Cloudflare and redeploy.
+                    Cloudflare's Build environment and redeploy.
                   </div>
                 ) : clientSecret ? (
-                  <div className="ck-embedded">
-                    <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
-                      <EmbeddedCheckout />
-                    </EmbeddedCheckoutProvider>
-                  </div>
+                  <Elements
+                    stripe={stripePromise}
+                    options={{ ...STRIPE_ELEMENTS_OPTIONS_BASE, clientSecret }}
+                  >
+                    <PaymentForm
+                      total={total}
+                      contact={contact}
+                      onError={setError}
+                    />
+                  </Elements>
                 ) : (
                   <div className="ck-stripe-loading">
                     <span className="ck-spinner" aria-hidden /> Preparing payment…
@@ -482,7 +631,7 @@ export default function Checkout({ open, initialEdition, onClose }) {
               </button>
             )}
             {step === 4 && (
-              <span className="ck-foot-note mono">Card entry below ↓</span>
+              <span className="ck-foot-note mono">Pay button below ↓</span>
             )}
           </div>
         </div>
@@ -702,14 +851,41 @@ ckStyles.textContent = `
 .ck-ship-name { font-family: var(--sans); font-size: 14px; color: var(--bone); font-weight: 500; }
 .ck-ship-sub { font-family: var(--serif); font-size: 13px; color: var(--bone-dim); font-style: italic; margin-top: 2px; }
 
-.ck-embedded {
-  background: var(--bone);
-  border: 1px solid var(--rule);
-  padding: 14px;
-  min-height: 480px;
-  border-radius: 4px;
+.ck-elements { display: flex; flex-direction: column; gap: 16px; margin-top: 4px; }
+.ck-elements-divider {
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  margin: 4px 0;
 }
-.ck-embedded > * { width: 100%; }
+.ck-elements-divider::before,
+.ck-elements-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+.ck-btn-pay-elements {
+  margin-top: 8px;
+  background: var(--gold);
+  color: var(--navy-900);
+  border: none;
+  padding: 16px 24px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 200ms;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+}
+.ck-btn-pay-elements:hover:not(:disabled) { background: #d4b56e; }
+.ck-btn-pay-elements:disabled { opacity: 0.5; cursor: not-allowed; }
 .ck-stripe-loading {
   display: flex; align-items: center; gap: 12px;
   padding: 32px;

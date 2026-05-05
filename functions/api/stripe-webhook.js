@@ -36,16 +36,44 @@ export async function onRequestPost({ request, env }) {
     return text("Invalid JSON", 400);
   }
 
+  // Handle both event shapes: checkout.session.completed (legacy CheckoutSession
+  // flow) and payment_intent.succeeded (current Payment Element flow).
+  let order = null;
   if (event.type === "checkout.session.completed") {
     const s = event.data.object;
-    const m = s.metadata || {};
-    const ship = s.shipping_details?.address || {};
+    order = {
+      name: s.customer_details?.name || s.metadata?.ship_name,
+      email: s.customer_details?.email || s.customer_email,
+      phone: s.customer_details?.phone,
+      amount: s.amount_total,
+      currency: s.currency,
+      ship: s.shipping_details?.address || {},
+      metadata: s.metadata || {},
+      stripe_id: s.id,
+    };
+  } else if (event.type === "payment_intent.succeeded") {
+    const pi = event.data.object;
+    order = {
+      name: pi.shipping?.name || pi.metadata?.ship_name,
+      email: pi.receipt_email || pi.metadata?.ship_email,
+      phone: pi.shipping?.phone,
+      amount: pi.amount,
+      currency: pi.currency,
+      ship: pi.shipping?.address || {},
+      metadata: pi.metadata || {},
+      stripe_id: pi.id,
+    };
+  }
+
+  if (order) {
+    const m = order.metadata;
+    const ship = order.ship;
 
     const lines = [
-      `New order from ${s.customer_details?.name || m.ship_name || "—"}`,
-      `Total charged: $${(s.amount_total / 100).toFixed(2)} ${s.currency?.toUpperCase()}`,
-      `Email: ${s.customer_details?.email || s.customer_email || "—"}`,
-      `Phone: ${s.customer_details?.phone || "—"}`,
+      `New order from ${order.name || "—"}`,
+      `Total charged: $${(order.amount / 100).toFixed(2)} ${order.currency?.toUpperCase()}`,
+      `Email: ${order.email || "—"}`,
+      `Phone: ${order.phone || "—"}`,
       "",
       `Edition: ${m.edition || "—"}${m.quantity ? ` × ${m.quantity}` : ""}`,
       m.add_ball === "yes" ? "Add-on: signed MLB ball" : null,
@@ -61,7 +89,7 @@ export async function onRequestPost({ request, env }) {
       "",
       `Method: ${m.ship_method === "express" ? "Express (UPS 2-day)" : "Standard (USPS Priority)"}`,
       "",
-      `Stripe session: ${s.id}`,
+      `Stripe ID: ${order.stripe_id}`,
     ]
       .filter(Boolean)
       .join("\n");
@@ -77,8 +105,8 @@ export async function onRequestPost({ request, env }) {
           body: JSON.stringify({
             from: env.NOTIFY_FROM || "Greg's Site <onboarding@resend.dev>",
             to: env.NOTIFY_TO || "gpryor@lifepriority.com",
-            reply_to: s.customer_details?.email || s.customer_email || undefined,
-            subject: `New order - ${m.edition === "signed" ? "Signed " : ""}book${m.add_ball === "yes" ? " + ball" : ""} - $${(s.amount_total / 100).toFixed(2)}`,
+            reply_to: order.email || undefined,
+            subject: `New order - ${m.edition === "signed" ? "Signed " : ""}book${m.add_ball === "yes" ? " + ball" : ""} - $${(order.amount / 100).toFixed(2)}`,
             text: lines,
           }),
         });

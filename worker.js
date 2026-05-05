@@ -5,6 +5,7 @@
 // index.html for any other miss (SPA deep-link fallback).
 
 import * as createCheckoutSession from "./functions/api/create-checkout-session.js";
+import * as createPaymentIntent from "./functions/api/create-payment-intent.js";
 import * as apply from "./functions/api/apply.js";
 import * as speakingRequest from "./functions/api/speaking-request.js";
 import * as stripeWebhook from "./functions/api/stripe-webhook.js";
@@ -13,6 +14,7 @@ import * as spotifyPlaylists from "./functions/api/spotify-playlists.js";
 
 const ROUTES = {
   "/api/create-checkout-session": createCheckoutSession,
+  "/api/create-payment-intent": createPaymentIntent,
   "/api/apply": apply,
   "/api/speaking-request": speakingRequest,
   "/api/stripe-webhook": stripeWebhook,

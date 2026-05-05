@@ -1,0 +1,14 @@
+{
+  "name": "greg",
+  "main": "worker.js",
+  "compatibility_date": "2025-04-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    // Public, non-secret defaults can live here.
+    // Real secrets (STRIPE_SECRET_KEY, RESEND_API_KEY) go in the
+    // Cloudflare dashboard under Settings -> Variables and Secrets.
+  }
+}

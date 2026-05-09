@@ -7,8 +7,9 @@ export default function Apply() {
   const [errors, setErrors] = useState({});
 
   const upcoming = [
-    "Apr 28 vs DET", "May 03 vs CLE", "May 11 vs MIN", "May 17 vs HOU",
-    "May 24 vs CHC", "Jun 06 vs LAA", "Jun 14 vs OAK", "Jun 28 vs TOR",
+    "Jul 05 vs PHI", "Jul 17 vs SDP", "Jul 20 vs SFG", "Jul 22 vs SFG",
+    "Aug 06 vs MIN", "Aug 08 vs CHC", "Aug 18 vs OAK", "Aug 21 vs DET",
+    "Aug 23 vs DET",
   ];
 
   const submit = async (e) => {

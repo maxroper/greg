@@ -138,7 +138,6 @@ export const NAV_ITEMS = [
   { id: "speaking", label: "On the Road", index: "04" },
   { id: "apply", label: "Sit Next To Me", index: "05" },
   { id: "mytake", label: "My Take", index: "06" },
-  { id: "music", label: "The Music", index: "07" },
-  { id: "podcast", label: "The Podcast", index: "08" },
-  { id: "contact", label: "Get in Touch", index: "09" },
+  { id: "podcast", label: "The Podcast", index: "07" },
+  { id: "contact", label: "Get in Touch", index: "08" },
 ];

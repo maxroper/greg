@@ -58,7 +58,6 @@ function Home() {
         <About show={["speaking"]} />
         <Apply />
         <MyTake />
-        <About show={["music"]} />
         <Podcast />
         <About show={["health"]} />
         <About show={["facebook"]} />

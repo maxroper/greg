@@ -97,7 +97,13 @@ npm run pages:dev    # builds + serves with Wrangler on http://localhost:8788
 ## Deploy
 
 The repo is wired to **Cloudflare Workers Builds**. Every push to `main`
-auto-deploys to production; pushes to other branches produce preview URLs.
+auto-deploys to production; pushes to other branches produce preview URLs
+that Greg never sees.
+
+**Workflow: push directly to `main`.** Don't route routine changes through
+feature branches or PRs — they won't deploy until merged, which adds a step
+without buying anything for a single-maintainer site. From a worktree
+branch: `git push origin HEAD:main`.
 
 What happens on a push:
 1. Cloudflare clones the repo.

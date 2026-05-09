@@ -22,6 +22,38 @@ const ROUTES = {
   "/api/spotify-playlists": spotifyPlaylists,
 };
 
+// Permissive CSP — allows the third parties this site actually uses (Stripe,
+// Google Fonts, GA4) plus inline styles (React style props + injected <style>
+// blocks). Tighten once we observe what's actually loaded in production.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://js.stripe.com https://m.stripe.network https://*.googletagmanager.com https://www.google-analytics.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "connect-src 'self' https://api.stripe.com https://m.stripe.network https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://m.stripe.network",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self' https://hooks.stripe.com",
+].join("; ");
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(self \"https://js.stripe.com\")",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+  "Content-Security-Policy": CSP,
+};
+
+function withSecurityHeaders(response, extra = {}) {
+  const headers = new Headers(response.headers);
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) headers.set(k, v);
+  for (const [k, v] of Object.entries(extra)) headers.set(k, v);
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -32,14 +64,20 @@ export default {
       const fnName = `onRequest${method[0].toUpperCase()}${method.slice(1).toLowerCase()}`;
       const fn = handler[fnName] || handler.onRequest;
       if (typeof fn === "function") {
-        return fn({ request, env, ctx });
+        const res = await fn({ request, env, ctx });
+        return withSecurityHeaders(res);
       }
-      return new Response("Method Not Allowed", { status: 405 });
+      return withSecurityHeaders(new Response("Method Not Allowed", { status: 405 }));
     }
 
     // SPA fallback: serve index.html for any non-asset, non-API request so
-    // refreshed deep links (#book etc.) still resolve.
+    // refreshed deep links (#book etc.) still resolve. Force a revalidation
+    // so deploys propagate fast — the page is small and any cached copy is
+    // already nullified by hashed asset URLs inside it.
     const indexRequest = new Request(new URL("/index.html", url), request);
-    return env.ASSETS.fetch(indexRequest);
+    const res = await env.ASSETS.fetch(indexRequest);
+    return withSecurityHeaders(res, {
+      "Cache-Control": "public, max-age=0, must-revalidate",
+    });
   },
 };

@@ -29,7 +29,9 @@ export default function Hero() {
   return (
     <section id="hero" ref={sectionRef} data-screen-label="00 Home" className="section hero">
       <div className="hero-bg" aria-hidden>
-        <div className="hero-photo" style={{ backgroundImage: `url(${ASSETS.gregYankees})` }} />
+        <div className="hero-photo" style={{
+          backgroundImage: `image-set(url(${ASSETS.gregYankees.replace(/\.jpe?g$/i, ".webp")}) type("image/webp"), url(${ASSETS.gregYankees}) type("image/jpeg"))`,
+        }} />
         <div className="hero-grid" />
         <div className="hero-glow hero-glow-1" />
         <div className="hero-glow hero-glow-2" />

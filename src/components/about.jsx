@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Reveal, Eyebrow, Btn } from "./primitives.jsx";
+import { Reveal, Eyebrow, Btn, Picture } from "./primitives.jsx";
 import { ASSETS, PRYOR_STATS, PLAYLISTS, FB_POSTS, FB_PAGE_URL } from "../data.js";
 import RequestDateModal from "./request-date-modal.jsx";
 
@@ -111,7 +111,7 @@ export default function About({ show }) {
           </Reveal>
           <Reveal delay={300} className="about-bio-img">
             <div className="about-bio-photo">
-              <img src={ASSETS.gregFielding} alt="Greg Pryor in the field, ready stance, glove down — visiting team road grays" />
+              <Picture src={ASSETS.gregFielding} alt="Greg Pryor in the field, ready stance, glove down — visiting team road grays" />
               <div className="about-bio-photo-cap mono">GREG IN UNIFORM · INFIELD READY</div>
             </div>
           </Reveal>
@@ -205,7 +205,7 @@ export default function About({ show }) {
           <div className="speaking-grid">
             <Reveal delay={120} className="speaking-img-wrap">
               <div className="speaking-img-frame">
-                <img src={ASSETS.gregKids} alt="Greg with a group of young baseball players" />
+                <Picture src={ASSETS.gregKids} alt="Greg with a group of young baseball players" />
                 <div className="speaking-img-overlay" aria-hidden></div>
                 <div className="speaking-img-cap mono">FIELD VISIT · INDIAN VALLEY · APRIL 2026</div>
               </div>

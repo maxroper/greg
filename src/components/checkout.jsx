@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { loadStripe } from "@stripe/stripe-js";
+// /pure prevents the Stripe.js <script> tag from being injected at import
+// time. The script only loads when loadStripe() is actually called.
+import { loadStripe } from "@stripe/stripe-js/pure";
 import {
   Elements,
   PaymentElement,
@@ -100,7 +102,14 @@ function PaymentForm({ total, contact, onError }) {
 //   the domain is registered in Stripe.
 
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = STRIPE_PK ? loadStripe(STRIPE_PK) : null;
+// Lazy: don't fetch js.stripe.com (~150 KB) until the user actually opens
+// the checkout modal and reaches the payment step.
+let _stripePromise = null;
+function getStripePromise() {
+  if (!STRIPE_PK) return null;
+  if (!_stripePromise) _stripePromise = loadStripe(STRIPE_PK);
+  return _stripePromise;
+}
 
 // Theme tokens for the embedded form. Matches the navy/gold palette so the
 // inputs feel like part of the site, not a third-party widget.
@@ -494,14 +503,14 @@ export default function Checkout({ open, initialEdition, onClose }) {
                   Card data goes directly to Stripe — Greg never sees it.
                   Apple Pay and Google Pay appear here when supported.
                 </p>
-                {!stripePromise ? (
+                {!STRIPE_PK ? (
                   <div className="ck-error">
                     Stripe isn't configured yet. Set <code>VITE_STRIPE_PUBLISHABLE_KEY</code> in
                     Cloudflare's Build environment and redeploy.
                   </div>
                 ) : clientSecret ? (
                   <Elements
-                    stripe={stripePromise}
+                    stripe={getStripePromise()}
                     options={{ ...STRIPE_ELEMENTS_OPTIONS_BASE, clientSecret }}
                   >
                     <PaymentForm

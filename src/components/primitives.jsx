@@ -1,10 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export function useReveal() {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) { el.classList.add("in"); return; }
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
@@ -17,6 +23,24 @@ export function useReveal() {
     return () => obs.disconnect();
   }, []);
   return ref;
+}
+
+// Drop-in <img> replacement that prefers a same-name .webp via <picture>.
+// Pass a JPEG src; the WebP is derived. Falls through to a plain <img> if the
+// src isn't a JPEG (so external URLs and SVGs keep working).
+export function Picture({ src, alt, className, style, loading = "lazy", decoding = "async", onError, ...rest }) {
+  const isJpeg = typeof src === "string" && /\.jpe?g$/i.test(src);
+  const img = (
+    <img src={src} alt={alt} loading={loading} decoding={decoding} onError={onError} {...rest} />
+  );
+  if (!isJpeg) return img;
+  const webp = src.replace(/\.jpe?g$/i, ".webp");
+  return (
+    <picture className={className} style={style}>
+      <source srcSet={webp} type="image/webp" />
+      {img}
+    </picture>
+  );
 }
 
 export function Reveal({ children, delay = 0, as: Tag = "div", className = "", style }) {
@@ -52,7 +76,7 @@ export function Placeholder({ label, ratio = "16/9", style, className = "" }) {
 export function ImgPlate({ src, alt, caption, ratio = "16/9", style, className = "" }) {
   return (
     <div className={`imgwrap ${className}`} style={{ aspectRatio: ratio, ...style }}>
-      <img src={src} alt={alt || ""} loading="lazy" />
+      <Picture src={src} alt={alt || ""} />
       {caption ? <div className="caption">{caption}</div> : null}
     </div>
   );
@@ -140,6 +164,7 @@ export function useParallax(speed = 0.18) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (prefersReducedMotion()) return;
     let raf = 0;
     const tick = () => {
       const rect = el.getBoundingClientRect();

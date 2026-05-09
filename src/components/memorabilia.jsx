@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Reveal, Eyebrow, Placeholder } from "./primitives.jsx";
+import { Reveal, Eyebrow, Placeholder, Picture } from "./primitives.jsx";
 import { MEMORABILIA } from "../data.js";
 
 function MemImg({ src, alt, label, ratio }) {
   const [errored, setErrored] = useState(false);
   if (!src || errored) return <Placeholder label={label} ratio={ratio || "auto"} style={{ width: "100%", height: "100%" }} />;
-  return <img src={src} alt={alt} loading="lazy" decoding="async" onError={() => setErrored(true)} />;
+  return <Picture src={src} alt={alt} onError={() => setErrored(true)} />;
 }
 
 export default function Memorabilia() {

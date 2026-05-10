@@ -9,7 +9,7 @@ export default function Privacy() {
   return (
     <main className="legal-page grain">
       <div className="legal-inner">
-        <a href="/" className="legal-back mono">← Back to gregpryor.com</a>
+        <a href="/" className="legal-back mono">← Back to thedaytheyankeesmademeshave.com</a>
 
         <header className="legal-head">
           <div className="mono legal-eyebrow">LEGAL</div>
@@ -25,7 +25,7 @@ export default function Privacy() {
           </p>
           <p>
             This policy describes the types of information collected when you visit
-            gregpryor.com (the "Website") and our practices for collecting,
+            thedaytheyankeesmademeshave.com (the "Website") and our practices for collecting,
             using, maintaining, protecting, and disclosing that information.
           </p>
           <p>The policy applies to information collected:</p>

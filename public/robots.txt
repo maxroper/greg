@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://gregpryor.com/sitemap.xml
+Sitemap: https://thedaytheyankeesmademeshave.com/sitemap.xml

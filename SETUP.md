@@ -45,8 +45,8 @@ Stripe order — all email gpryor@lifepriority.com.
 **To do:**
 - [ ] Create a Resend account
 - [ ] Verify a sender domain (so emails come from a real address, not a sandbox):
-  - Domains → Add Domain → enter `lifepriority.com` (or `gregpryor.com` if
-    that's where the site lives)
+  - Domains → Add Domain → enter `lifepriority.com` (or `thedaytheyankeesmademeshave.com`
+    if that's where the site lives)
   - Resend shows DNS records (SPF, DKIM, DMARC) — paste them at the DNS
     provider for that domain
   - Wait for "Verified" status (usually < 30 min)
@@ -142,7 +142,7 @@ Spotify account)
 - [ ] Inside that account: **Create → Property** → name it "Greg Pryor Site"
       → set time zone + currency
 - [ ] **Data streams → Add stream → Web** → enter the live URL
-      (e.g. `https://gregpryor.com`) and a stream name
+      (e.g. `https://thedaytheyankeesmademeshave.com`) and a stream name
 - [ ] Copy the **Measurement ID** at the top right — it starts with `G-`
 - [ ] *(Recommended)* Set the data retention to 14 months under
       Admin → Data Settings → Data Retention
@@ -163,17 +163,18 @@ Spotify account)
 
 ## 6. Custom domain (optional but recommended)
 
-Right now the site lives at `greg.maxroper-greg.workers.dev` (or similar
-auto-generated URL). For a real launch you want `gregpryor.com`.
+Right now the site lives at `greg.4rq8k9tm7t.workers.dev` (or similar
+auto-generated URL). For launch the site will live at
+`thedaytheyankeesmademeshave.com`.
 
 **To do:**
-- [ ] Buy `gregpryor.com` (or use a domain Greg already owns)
-- [ ] In Cloudflare Pages → your project → **Settings → Domains** → Add Domain
+- [ ] Point `thedaytheyankeesmademeshave.com` at the Worker (Cloudflare → Workers
+      → your worker → **Settings → Domains & Routes** → Add Custom Domain)
 - [ ] Cloudflare walks you through DNS config (CNAME or A records). If the
       domain is registered through Cloudflare, it's one click. Cert is auto-
       issued.
-- [ ] Once live, set `PUBLIC_BASE_URL=https://gregpryor.com` so Stripe success/
-      cancel URLs use the canonical origin.
+- [ ] Once live, set `PUBLIC_BASE_URL=https://thedaytheyankeesmademeshave.com` so
+      Stripe success/cancel URLs use the canonical origin.
 - [ ] Update the Stripe webhook endpoint URL (Section 1) to use the new domain.
 
 ---

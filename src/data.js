@@ -117,10 +117,10 @@ export const TAKES = [
 ];
 
 export const HOT_TAKE_ROYALS = {
-  date: "April 25, 2026",
+  date: "May 10, 2026",
   team: "Kansas City Royals",
-  record: "12-9",
-  take: "Bobby Witt Jr. is going to win an MVP and the front office is finally not blowing up the rotation to fund it. I've waited 41 years to feel this way again. Don't trade Lugo. Don't trade Singer. Let it cook.",
+  record: "23-18",
+  take: "Six weeks in and the rotation is finally healthy. Lugo at a 3.10. Wacha eating his innings. Witt slugging like a man with something to prove. Memorial Day is when the standings stop lying — if we're still above water on June 1, the front office better be on the phone. Add a setup man. Add a lefty bat. Don't get cute.",
 };
 
 export const PLAYLISTS = [
@@ -138,6 +138,5 @@ export const NAV_ITEMS = [
   { id: "speaking", label: "On the Road", index: "04" },
   { id: "apply", label: "Sit Next To Me", index: "05" },
   { id: "mytake", label: "My Take", index: "06" },
-  { id: "podcast", label: "The Podcast", index: "07" },
-  { id: "contact", label: "Get in Touch", index: "08" },
+  { id: "contact", label: "Get in Touch", index: "07" },
 ];

@@ -8,7 +8,6 @@ import Memorabilia from "./components/memorabilia.jsx";
 import About from "./components/about.jsx";
 import Apply from "./components/apply.jsx";
 import MyTake from "./components/mytake.jsx";
-import Podcast from "./components/podcast.jsx";
 import Footer from "./components/footer.jsx";
 import CheckoutBanner from "./components/checkout-banner.jsx";
 import Analytics from "./components/analytics.jsx";
@@ -59,7 +58,6 @@ function Home() {
         <About show={["speaking"]} />
         <Apply />
         <MyTake />
-        <Podcast />
         <About show={["health"]} />
         <About show={["facebook"]} />
         <About show={["contact"]} />

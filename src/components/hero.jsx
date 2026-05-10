@@ -324,6 +324,11 @@ heroStyles.textContent = `
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* Italic Fraunces has a rightward swash on the final 'r' that overhangs
+     the inline box. Without an inline-block + padding-right, the gradient
+     ends at the box and the swash renders without fill (or clipped). */
+  display: inline-block;
+  padding-right: 0.12em;
 }
 
 .hero-divider {
@@ -414,7 +419,7 @@ heroStyles.textContent = `
     -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 30%, black 70%, transparent 100%);
   }
   .hero-inner { padding-top: 12px; }
-  .hero-title { font-size: clamp(60px, 16vw, 112px); padding-right: 0.06em; }
+  .hero-title { font-size: clamp(60px, 16vw, 112px); }
   .hero-divider { margin: 20px 0; width: 64px; }
   .hero-lede { font-size: 16px; }
   .hero-cta-row { gap: 10px; }

@@ -71,6 +71,7 @@ export async function onRequestPost({ request, env }) {
     ball_inscription: sanitize(body.ballInscription, 80),
     ship_name: sanitize(contact.name, 100),
     ship_email: sanitize(contact.email, 254),
+    ship_phone: sanitize(contact.phone, 40),
     ship_address: sanitize(contact.address1, 200),
     ship_city: sanitize(contact.city, 80),
     ship_state: sanitize(contact.state, 4),
@@ -88,6 +89,7 @@ export async function onRequestPost({ request, env }) {
   params.append("receipt_email", sanitize(contact.email, 254));
   params.append("description", `Order: ${quantity} × ${ed.name}${addBall ? " + signed ball" : ""}`);
   params.append("shipping[name]", sanitize(contact.name, 100));
+  params.append("shipping[phone]", sanitize(contact.phone, 40));
   params.append("shipping[address][line1]", sanitize(contact.address1, 200));
   params.append("shipping[address][city]", sanitize(contact.city, 80));
   params.append("shipping[address][state]", sanitize(contact.state, 4));

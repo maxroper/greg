@@ -11,6 +11,9 @@ import * as speakingRequest from "./functions/api/speaking-request.js";
 import * as stripeWebhook from "./functions/api/stripe-webhook.js";
 import * as facebookPosts from "./functions/api/facebook-posts.js";
 import * as spotifyPlaylists from "./functions/api/spotify-playlists.js";
+import * as adminLogin from "./functions/api/admin-login.js";
+import * as adminContent from "./functions/api/admin-content.js";
+import * as adminOrders from "./functions/api/admin-orders.js";
 
 const ROUTES = {
   "/api/create-checkout-session": createCheckoutSession,
@@ -20,6 +23,9 @@ const ROUTES = {
   "/api/stripe-webhook": stripeWebhook,
   "/api/facebook-posts": facebookPosts,
   "/api/spotify-playlists": spotifyPlaylists,
+  "/api/admin/login": adminLogin,
+  "/api/admin/content": adminContent,
+  "/api/admin/orders": adminOrders,
 };
 
 // Permissive CSP — allows the third parties this site actually uses (Stripe,
@@ -70,11 +76,13 @@ export default {
       return withSecurityHeaders(new Response("Method Not Allowed", { status: 405 }));
     }
 
-    // SPA fallback: serve index.html for any non-asset, non-API request so
+    // SPA fallback: serve the app shell for any non-asset, non-API request so
     // refreshed deep links (#book etc.) still resolve. Force a revalidation
     // so deploys propagate fast — the page is small and any cached copy is
     // already nullified by hashed asset URLs inside it.
-    const indexRequest = new Request(new URL("/index.html", url), request);
+    // Fetch "/" instead of "/index.html": the static-asset runtime redirects
+    // /index.html to /, which would erase deep links like /admin.
+    const indexRequest = new Request(new URL("/", url), request);
     const res = await env.ASSETS.fetch(indexRequest);
     return withSecurityHeaders(res, {
       "Cache-Control": "public, max-age=0, must-revalidate",

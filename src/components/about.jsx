@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Reveal, Eyebrow, Btn, Picture } from "./primitives.jsx";
 import { ASSETS, PRYOR_STATS, PLAYLISTS, FB_POSTS, FB_PAGE_URL } from "../data.js";
 import RequestDateModal from "./request-date-modal.jsx";
+import { useSiteContent } from "../content.js";
 
 function SpotifyMark() {
   return (
@@ -68,6 +69,12 @@ function useSpotifyPlaylists(enabled) {
 }
 
 export default function About({ show }) {
+  const content = useSiteContent();
+  const aboutCopy = content.about;
+  const speakingCopy = content.speaking;
+  const healthCopy = content.health;
+  const facebookCopy = content.facebook;
+  const contactCopy = content.contact;
   const visible = (k) => !show || show.includes(k);
   const [statTab, setStatTab] = useState("highlights");
   const [requestOpen, setRequestOpen] = useState(false);
@@ -83,10 +90,10 @@ export default function About({ show }) {
       <div className="section-inner">
        {visible("intro") && <>
         <div className="about-head">
-          <Reveal><Eyebrow index="03">About Greg</Eyebrow></Reveal>
+          <Reveal><Eyebrow index="03">{aboutCopy.eyebrow}</Eyebrow></Reveal>
           <Reveal delay={120}>
             <h2 className="display h-xl about-title">
-              Ten seasons.<br/><em>One ring</em>. A lot of vinyl.
+              {aboutCopy.titleLine1}<br/><em>{aboutCopy.titleLine2}</em>. {aboutCopy.titleLine3}
             </h2>
           </Reveal>
         </div>
@@ -94,19 +101,10 @@ export default function About({ show }) {
         <div className="about-bio-row">
           <Reveal delay={200} className="about-bio-text">
             <p className="lede">
-              Born in Marietta, Ohio. Drafted by the Senators in the 6th round in
-              1971. Spent six years in the minors before Bill Veeck
-              gave me a real shot with the White Sox in 1978. Made the majors for
-              good at 28. Played 789 big league games at second, short, and third.
-              Hit .250 lifetime. Ring in '85.
+              {aboutCopy.bio1}
             </p>
             <p className="lede">
-              Being a utility player meant I had to be sharper than everyone
-              else — ready to step in at four positions on a moment's notice,
-              and good enough to be trusted in October. It's the position that
-              keeps a clubhouse together and a contender on the field.
-              I wore the role with pride, and I came home with the ring to show
-              for it.
+              {aboutCopy.bio2}
             </p>
           </Reveal>
           <Reveal delay={300} className="about-bio-img">
@@ -120,7 +118,7 @@ export default function About({ show }) {
         <div className="about-stats-section">
           <Reveal>
             <div className="about-section-head">
-              <h3 className="display h-md">Career</h3>
+              <h3 className="display h-md">{aboutCopy.careerHeading}</h3>
               <div className="about-tabs">
                 {[
                   { k: "highlights", l: "Highlights" },
@@ -197,8 +195,8 @@ export default function About({ show }) {
         <div id="speaking" data-screen-label="On the Road" className="about-speaking">
           <Reveal>
             <div className="about-section-head">
-              <h3 className="display h-md">On the Road</h3>
-              <span className="mono about-section-sub">SPEAKING · STORYTELLING · CLINICS</span>
+              <h3 className="display h-md">{speakingCopy.heading}</h3>
+              <span className="mono about-section-sub">{speakingCopy.subheading}</span>
             </div>
           </Reveal>
 
@@ -216,57 +214,41 @@ export default function About({ show }) {
               <Reveal delay={200}>
                 <div className="speaking-eyebrow mono">
                   <span className="dot" />
-                  BOOK A SPEAKING ENGAGEMENT
+                  {speakingCopy.eyebrow}
                 </div>
               </Reveal>
               <Reveal delay={280}>
                 <h4 className="display speaking-headline">
-                  Bring me to your <em>special event</em>,<br/>your sales clubhouse,<br/>or your kid's little league camp.
+                  {speakingCopy.headlineLine1} <em>{speakingCopy.headlineEmphasis}</em>,<br/>{speakingCopy.headlineLine2}<br/>{speakingCopy.headlineLine3}
                 </h4>
               </Reveal>
               <Reveal delay={360}>
                 <p className="speaking-lede">
-                  16 years in the game taught me a lot of character — and a few
-                  lessons worth passing on. I do corporate keynotes, fundraisers,
-                  fantasy camps, school visits, and the occasional birthday party
-                  if the cake is good. The Yankees made me shave. They didn't make
-                  me boring.
+                  {speakingCopy.lede}
                 </p>
               </Reveal>
 
               <Reveal delay={440}>
                 <ul className="speaking-list">
-                  <li>
-                    <span className="speaking-list-num mono">01</span>
-                    <div>
-                      <strong>Keynotes &amp; Banquets</strong>
-                      <span>30–60 min. Stories from the dugout, the bus, and the World Series.</span>
-                    </div>
-                  </li>
-                  <li>
-                    <span className="speaking-list-num mono">02</span>
-                    <div>
-                      <strong>Youth Clinics</strong>
-                      <span>Glove work, base running, and what to do when nobody's watching.</span>
-                    </div>
-                  </li>
-                  <li>
-                    <span className="speaking-list-num mono">03</span>
-                    <div>
-                      <strong>Fundraisers &amp; Q&amp;A</strong>
-                      <span>Bring the ring. Sign the book. Stay for dinner.</span>
-                    </div>
-                  </li>
+                  {speakingCopy.list.map((item, index) => (
+                    <li key={index}>
+                      <span className="speaking-list-num mono">{String(index + 1).padStart(2, "0")}</span>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <span>{item.text}</span>
+                      </div>
+                    </li>
+                  ))}
                 </ul>
               </Reveal>
 
               <Reveal delay={520}>
                 <div className="speaking-cta-row">
                   <Btn primary onClick={() => setRequestOpen(true)}>
-                    Request a date
+                    {speakingCopy.cta}
                   </Btn>
                   <span className="speaking-cta-note mono">
-                    WILL TRAVEL FOR THE RIGHT BBQ
+                    {speakingCopy.note}
                   </span>
                 </div>
               </Reveal>
@@ -345,36 +327,35 @@ export default function About({ show }) {
               <div className="lp-text">
                 <div className="lp-eyebrow mono">
                   <span className="lp-pulse" aria-hidden />
-                  ALSO RUNNING — SINCE 1991
+                  {healthCopy.eyebrow}
                 </div>
                 <h3 id="lp-h" className="display lp-h">
-                  Played the long game.<br />
-                  <em>Still playing it.</em>
+                  {healthCopy.titleLine1}<br />
+                  <em>{healthCopy.titleEmphasis}</em>
                 </h3>
                 <p className="lp-lede">
-                  After baseball, I co-founded <strong>Life Priority</strong> with my old
-                  teammate Durk Pearson. Our flagship product, <strong>LIFT Caps™</strong>,
-                  is a science-first energy and focus formula — caffeine paired with
-                  L-Phenylalanine, B-vitamins, and choline. No crash, no jitters, just
-                  a clean lift that keeps you moving.
+                  {healthCopy.lede}
                 </p>
 
                 <div className="lp-pillars">
-                  <div className="lp-pillar"><div className="lp-pillar-n mono">01</div><div className="lp-pillar-t">Clean energy, no crash</div></div>
-                  <div className="lp-pillar"><div className="lp-pillar-n mono">02</div><div className="lp-pillar-t">Mental focus &amp; clarity</div></div>
-                  <div className="lp-pillar"><div className="lp-pillar-n mono">03</div><div className="lp-pillar-t">Mood &amp; motivation</div></div>
+                  {healthCopy.pillars.map((pillar, index) => (
+                    <div className="lp-pillar" key={pillar}>
+                      <div className="lp-pillar-n mono">{String(index + 1).padStart(2, "0")}</div>
+                      <div className="lp-pillar-t">{pillar}</div>
+                    </div>
+                  ))}
                 </div>
 
                 <div className="lp-cta-row">
                   <a className="lp-btn lp-btn-primary" href="https://lifepriority.com/product/lift-caps/" target="_blank" rel="noopener noreferrer">
-                    <span>Shop LIFT Caps</span>
+                    <span>{healthCopy.cta}</span>
                     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden>
                       <path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </a>
                   <span className="lp-stat mono">
                     <span className="lp-stat-n">35</span>
-                    <span className="lp-stat-l">YEARS<br/>IN BUSINESS</span>
+                    <span className="lp-stat-l">{healthCopy.yearsLabel.split(" ").slice(0, 2).join(" ")}<br/>{healthCopy.yearsLabel.split(" ").slice(2).join(" ")}</span>
                   </span>
                 </div>
               </div>
@@ -416,13 +397,13 @@ export default function About({ show }) {
                 <svg className="fb-eyebrow-mark" viewBox="0 0 24 24" width="14" height="14" aria-hidden>
                   <path fill="currentColor" d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82V14.706h-3.13V11.08h3.13V8.413c0-3.099 1.894-4.785 4.659-4.785 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.31h3.59l-.467 3.626H17.56V24h5.115C23.407 24 24 23.407 24 22.676V1.325C24 .593 23.407 0 22.675 0z"/>
                 </svg>
-                <span>FROM THE FACEBOOK PAGE</span>
+                <span>{facebookCopy.eyebrow}</span>
               </div>
               <h3 id="fb-h" className="display fb-title">
-                Latest from <em>@GregPryor85</em>
+                {facebookCopy.titlePrefix} <em>{facebookCopy.titleHandle}</em>
               </h3>
               <a className="fb-follow" href={FB_PAGE_URL} target="_blank" rel="noopener noreferrer">
-                <span>Follow on Facebook</span>
+                <span>{facebookCopy.followCta}</span>
                 <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden>
                   <path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -485,7 +466,7 @@ export default function About({ show }) {
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden>
                   <path fill="currentColor" d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82V14.706h-3.13V11.08h3.13V8.413c0-3.099 1.894-4.785 4.659-4.785 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.31h3.59l-.467 3.626H17.56V24h5.115C23.407 24 24 23.407 24 22.676V1.325C24 .593 23.407 0 22.675 0z"/>
                 </svg>
-                <span>Follow @GregPryor85 — the stories don't stop</span>
+                <span>{facebookCopy.bottomCta}</span>
                 <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden>
                   <path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -499,20 +480,19 @@ export default function About({ show }) {
         <Reveal delay={200}>
           <div id="contact" data-screen-label="Get in Touch" className="about-contact">
             <div>
-              <div className="mono about-contact-tag">GET IN TOUCH</div>
+              <div className="mono about-contact-tag">{contactCopy.tag}</div>
               <h3 className="display h-md" style={{margin: "12px 0 16px"}}>
-                I read everything.<br/><em>Eventually.</em>
+                {contactCopy.headingLine1}<br/><em>{contactCopy.headingEmphasis}</em>
               </h3>
               <p style={{maxWidth: "44ch", color: "var(--bone-dim)"}}>
-                Press, podcast guests, autograph requests, baseball questions, or
-                a friendly hello — pick a button.
+                {contactCopy.lede}
               </p>
             </div>
             <div className="about-contact-btns">
-              <Btn primary href="mailto:gpryor@lifepriority.com">Email Greg</Btn>
-              <Btn ghost href={FB_PAGE_URL} target="_blank" rel="noopener noreferrer">Facebook</Btn>
-              <Btn ghost>Press Kit</Btn>
-              <Btn ghost>Autograph Request</Btn>
+              <Btn primary href="mailto:gpryor@lifepriority.com">{contactCopy.emailCta}</Btn>
+              <Btn ghost href={FB_PAGE_URL} target="_blank" rel="noopener noreferrer">{contactCopy.facebookCta}</Btn>
+              <Btn ghost>{contactCopy.pressCta}</Btn>
+              <Btn ghost>{contactCopy.autographCta}</Btn>
             </div>
           </div>
         </Reveal>

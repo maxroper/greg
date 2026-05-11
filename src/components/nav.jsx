@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { NAV_ITEMS } from "../data.js";
+import { useSiteContent } from "../content.js";
 
 export default function Nav({ active }) {
+  const content = useSiteContent();
+  const navItems = content.nav.items;
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -22,10 +24,10 @@ export default function Nav({ active }) {
       <div className="nav-inner">
         <a className="nav-brand" href="#hero" onClick={(e) => { e.preventDefault(); go("hero"); }}>
           <span className="nav-mark">GP</span>
-          <span className="nav-name">Greg Pryor</span>
+          <span className="nav-name">{content.nav.brand}</span>
         </a>
         <ul className="nav-links">
-          {NAV_ITEMS.slice(1).map((it) => (
+          {navItems.slice(1).map((it) => (
             <li key={it.id}>
               <a
                 href={`#${it.id}`}
@@ -44,7 +46,7 @@ export default function Nav({ active }) {
       </div>
       {open && (
         <div className="nav-mobile">
-          {NAV_ITEMS.map((it) => (
+          {navItems.map((it) => (
             <a key={it.id} href={`#${it.id}`} onClick={(e) => { e.preventDefault(); go(it.id); }}>
               <span className="mono">{it.index}</span> {it.label}
             </a>

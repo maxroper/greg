@@ -44,7 +44,7 @@ export async function onRequestPost({ request, env }) {
     order = {
       name: s.customer_details?.name || s.metadata?.ship_name,
       email: s.customer_details?.email || s.customer_email,
-      phone: s.customer_details?.phone,
+      phone: s.customer_details?.phone || s.metadata?.ship_phone,
       amount: s.amount_total,
       currency: s.currency,
       ship: s.shipping_details?.address || {},
@@ -56,7 +56,7 @@ export async function onRequestPost({ request, env }) {
     order = {
       name: pi.shipping?.name || pi.metadata?.ship_name,
       email: pi.receipt_email || pi.metadata?.ship_email,
-      phone: pi.shipping?.phone,
+      phone: pi.shipping?.phone || pi.metadata?.ship_phone,
       amount: pi.amount,
       currency: pi.currency,
       ship: pi.shipping?.address || {},

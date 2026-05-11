@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Reveal, Eyebrow, Placeholder, Picture } from "./primitives.jsx";
 import { MEMORABILIA } from "../data.js";
+import { useSiteContent } from "../content.js";
 
 function MemImg({ src, alt, label, ratio }) {
   const [errored, setErrored] = useState(false);
@@ -10,9 +11,16 @@ function MemImg({ src, alt, label, ratio }) {
 }
 
 export default function Memorabilia() {
+  const { memorabilia: copy } = useSiteContent();
   const [active, setActive] = useState(null);
   const [filter, setFilter] = useState("All");
   const cats = ["All", "Championship", "Signed", "Award", "Gear", "Memento"];
+  const mergedMemorabilia = useMemo(() => {
+    return MEMORABILIA.map((item) => ({
+      ...item,
+      ...(copy.items.find((copyItem) => copyItem.id === item.id) || {}),
+    }));
+  }, [copy.items]);
 
   useEffect(() => {
     if (!active) return;
@@ -25,22 +33,21 @@ export default function Memorabilia() {
     };
   }, [active]);
 
-  const items = useMemo(() => filter === "All" ? MEMORABILIA : MEMORABILIA.filter(m => m.category === filter), [filter]);
+  const items = useMemo(() => filter === "All" ? mergedMemorabilia : mergedMemorabilia.filter(m => m.category === filter), [filter, mergedMemorabilia]);
 
   return (
     <section id="memorabilia" data-screen-label="02 The Collection" className="section mem">
       <div className="section-inner">
         <div className="mem-head">
-          <Reveal><Eyebrow index="02">The Collection</Eyebrow></Reveal>
+          <Reveal><Eyebrow index="02">{copy.eyebrow}</Eyebrow></Reveal>
           <Reveal delay={120}>
             <h2 className="display h-xl mem-title">
-              The <em>10 things</em><br/>I never threw out.
+              {copy.titlePrefix} <em>{copy.titleEmphasis}</em><br/>{copy.titleSuffix}
             </h2>
           </Reveal>
           <Reveal delay={240}>
             <p className="lede" style={{maxWidth: "60ch"}}>
-              Some of these I earned. Some I borrowed. One of them I'm pretty sure
-              still belongs to Hal McRae. A small museum of a ten-year career.
+              {copy.lede}
             </p>
           </Reveal>
         </div>

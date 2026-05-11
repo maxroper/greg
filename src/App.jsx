@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NAV_ITEMS } from "./data.js";
+import { SiteContentProvider, useSiteContent } from "./content.js";
 import { ScrollProgress, useActiveSection, useSectionInView } from "./components/primitives.jsx";
 import Nav from "./components/nav.jsx";
 import Hero from "./components/hero.jsx";
@@ -12,6 +12,7 @@ import Footer from "./components/footer.jsx";
 import CheckoutBanner from "./components/checkout-banner.jsx";
 import Analytics from "./components/analytics.jsx";
 import Privacy from "./components/privacy.jsx";
+import Admin from "./components/admin.jsx";
 
 // Tiny pathname-based router. The Worker serves index.html for any non-asset
 // non-API request, so /privacy hits this app and we render the right page.
@@ -27,6 +28,9 @@ function usePathname() {
 
 export default function App() {
   const path = usePathname();
+  if (path.startsWith("/admin")) {
+    return <Admin />;
+  }
   if (path.startsWith("/privacy")) {
     return (
       <>
@@ -35,11 +39,16 @@ export default function App() {
       </>
     );
   }
-  return <Home />;
+  return (
+    <SiteContentProvider>
+      <Home />
+    </SiteContentProvider>
+  );
 }
 
 function Home() {
-  const ids = NAV_ITEMS.map((n) => n.id);
+  const content = useSiteContent();
+  const ids = content.nav.items.map((n) => n.id);
   const active = useActiveSection(ids);
   useSectionInView();
 

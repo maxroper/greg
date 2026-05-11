@@ -116,6 +116,7 @@ export async function onRequestPost({ request, env }) {
     inscription: sanitize(body.inscription, 200),
     ball_inscription: sanitize(body.ballInscription, 80),
     ship_name: sanitize(contact.name, 100),
+    ship_phone: sanitize(contact.phone, 40),
     ship_address: sanitize(contact.address1, 200),
     ship_city: sanitize(contact.city, 80),
     ship_state: sanitize(contact.state, 4),

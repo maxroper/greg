@@ -28,6 +28,19 @@ NOTIFY_TO=gpryor@lifepriority.com
 #   2. an address on a domain you've verified in Resend (e.g. noreply@lifepriority.com)
 NOTIFY_FROM=Greg's Site <onboarding@resend.dev>
 
+# --- Admin console (optional, required for /admin) ---
+# ADMIN_PASSWORD gates the browser admin at /admin.
+ADMIN_PASSWORD=
+# Optional: separate HMAC signing secret for admin sessions. If empty,
+# ADMIN_PASSWORD is used for signing.
+ADMIN_SESSION_SECRET=
+# Optional: enables saving site-copy edits by committing public/site-content.json
+# straight to main. Use a fine-grained GitHub token with Contents read/write for
+# the maxroper/greg repository.
+GITHUB_ADMIN_TOKEN=
+GITHUB_REPO=maxroper/greg
+GITHUB_BRANCH=main
+
 # --- Facebook posts (optional) ---
 # Without these the Facebook section uses a static fallback. To pull real posts:
 #   1. Create a Meta app at https://developers.facebook.com/apps

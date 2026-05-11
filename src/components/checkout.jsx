@@ -10,6 +10,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { useSiteContent } from "../content.js";
 
 // Inner payment form, mounted inside <Elements> so it can use Stripe's hooks.
 // Handles both express buttons (Apple Pay / Google Pay / Link) at the top
@@ -33,8 +34,9 @@ function PaymentForm({ total, contact, onError }) {
         payment_method_data: {
           billing_details: {
             name: contact.name,
-            email: contact.email,
-            address: {
+              email: contact.email,
+              phone: contact.phone,
+              address: {
               line1: contact.address1,
               city: contact.city,
               state: contact.state,
@@ -165,6 +167,7 @@ const STRIPE_ELEMENTS_OPTIONS_BASE = {
   ],
 };
 export default function Checkout({ open, initialEdition, onClose }) {
+  const { checkout: copy } = useSiteContent();
   const [step, setStep] = useState(1);
   const [edition, setEdition] = useState(initialEdition || "signed");
   const [quantity, setQuantity] = useState(1);
@@ -174,7 +177,7 @@ export default function Checkout({ open, initialEdition, onClose }) {
   const [addBall, setAddBall] = useState(false);
   const [ballInscription, setBallInscription] = useState("");
   const [shipMethod, setShipMethod] = useState("standard");
-  const [contact, setContact] = useState({ email: "", name: "", address1: "", city: "", state: "", zip: "" });
+  const [contact, setContact] = useState({ email: "", phone: "", name: "", address1: "", city: "", state: "", zip: "" });
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [summaryOpen, setSummaryOpen] = useState(false);
@@ -205,8 +208,8 @@ export default function Checkout({ open, initialEdition, onClose }) {
   if (!open) return null;
 
   const editions = {
-    standard: { name: "Hardcover, unsigned", price: 24.95, sub: "Direct from Greg's garage. Ships in 2 days." },
-    signed: { name: "Hardcover, signed by Greg", price: 32.00, sub: "Personalized inscription available. Ships in a week." },
+    standard: { name: copy.editions.standard.name, price: 24.95, sub: copy.editions.standard.sub },
+    signed: { name: copy.editions.signed.name, price: 32.00, sub: copy.editions.signed.sub },
   };
 
   const editionPrice = editions[edition].price;
@@ -273,8 +276,8 @@ export default function Checkout({ open, initialEdition, onClose }) {
       <div className="ck-modal" role="dialog" aria-modal="true">
         <div className="ck-head">
           <div className="ck-head-l">
-            <span className="mono ck-head-tag">DIRECT FROM GREG · NO. 04</span>
-            <div className="ck-head-title">Order signed copy</div>
+            <span className="mono ck-head-tag">{copy.headerTag}</span>
+            <div className="ck-head-title">{copy.headerTitle}</div>
           </div>
           <button className="ck-close" onClick={onClose} aria-label="Close" disabled={processing}>
             <svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
@@ -299,8 +302,8 @@ export default function Checkout({ open, initialEdition, onClose }) {
           <div className="ck-main">
             {step === 1 && (
               <div className="ck-pane">
-                <h3 className="ck-h">Pick your edition.</h3>
-                <p className="ck-lede">Two ways to take a book home from the dugout. Signed by me, personalized however you want.</p>
+                <h3 className="ck-h">{copy.editionHeading}</h3>
+                <p className="ck-lede">{copy.editionLede}</p>
 
                 <div className="ck-edits">
                   {Object.entries(editions).map(([key, e]) => (
@@ -325,8 +328,8 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
                 <div className="ck-qty-row">
                   <div className="ck-qty-l">
-                    <div className="ck-qty-name">How many copies?</div>
-                    <div className="ck-qty-sub">Buying for the whole team? Greg ships up to 25 in one box.</div>
+                    <div className="ck-qty-name">{copy.quantityLabel}</div>
+                    <div className="ck-qty-sub">{copy.quantityHelp}</div>
                   </div>
                   <div className="ck-qty-stepper" role="group" aria-label="Quantity">
                     <button type="button" className="ck-qty-btn" onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1} aria-label="Decrease quantity">−</button>
@@ -362,9 +365,9 @@ export default function Checkout({ open, initialEdition, onClose }) {
                       </svg>
                     </div>
                     <div>
-                      <div className="ck-addon-tag mono">ADD A SIGNED BALL · +$89</div>
-                      <div className="ck-addon-name">Official MLB ball, signed by Greg</div>
-                      <div className="ck-addon-sub">Personalize it too. Ships protected in a UV display case.</div>
+                      <div className="ck-addon-tag mono">{copy.addonTag}</div>
+                      <div className="ck-addon-name">{copy.addonName}</div>
+                      <div className="ck-addon-sub">{copy.addonSub}</div>
                     </div>
                   </div>
                   <button className={`ck-addon-btn ${addBall ? "is-on" : ""}`} onClick={() => setAddBall(v => !v)}>
@@ -376,18 +379,18 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
             {step === 2 && (
               <div className="ck-pane">
-                <h3 className="ck-h">Make it yours.</h3>
+                <h3 className="ck-h">{copy.personalizeHeading}</h3>
                 <p className="ck-lede">
                   {edition !== "standard" && quantity > 1
-                    ? <>Tell me who I'm writing this for. All <strong>{quantity}</strong> copies get the same inscription — message me after if you need different ones per copy.</>
-                    : "Tell me who I'm writing this for. I'll handle the rest with a real pen."
+                    ? copy.personalizeLedeMultiple.replace("{quantity}", quantity)
+                    : copy.personalizeLedeSingle
                   }
                 </p>
 
                 {edition === "standard" ? (
                   <div className="ck-info">
                     <div className="mono ck-info-tag">UNSIGNED EDITION</div>
-                    <p>You picked the unsigned hardcover, so there's nothing to personalize on the book itself.{addBall ? " You can still inscribe the baseball below." : ""}</p>
+                    <p>{copy.unsignedNote}{addBall ? " You can still inscribe the baseball below." : ""}</p>
                     <button className="ck-link" onClick={() => setStep(1)}>Want it signed instead? →</button>
                   </div>
                 ) : (
@@ -447,13 +450,17 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
             {step === 3 && (
               <div className="ck-pane">
-                <h3 className="ck-h">Where am I sending it?</h3>
-                <p className="ck-lede">Drops in the mail from Olathe, Kansas. I write the address by hand.</p>
+                <h3 className="ck-h">{copy.shippingHeading}</h3>
+                <p className="ck-lede">{copy.shippingLede}</p>
 
                 <div className="ck-grid-2">
                   <label className="ck-field ck-field-full">
                     <span className="ck-label mono">EMAIL</span>
                     <input type="email" placeholder="you@example.com" value={contact.email} onChange={(e) => setContact({...contact, email: e.target.value})} />
+                  </label>
+                  <label className="ck-field ck-field-full">
+                    <span className="ck-label mono">PHONE <span className="ck-label-opt">(optional)</span></span>
+                    <input type="tel" placeholder="For shipping questions" value={contact.phone} onChange={(e) => setContact({...contact, phone: e.target.value})} />
                   </label>
                   <label className="ck-field ck-field-full">
                     <span className="ck-label mono">FULL NAME</span>
@@ -498,10 +505,9 @@ export default function Checkout({ open, initialEdition, onClose }) {
 
             {step === 4 && (
               <div className="ck-pane">
-                <h3 className="ck-h">Payment</h3>
+                <h3 className="ck-h">{copy.paymentHeading}</h3>
                 <p className="ck-lede">
-                  Card data goes directly to Stripe — Greg never sees it.
-                  Apple Pay and Google Pay appear here when supported.
+                  {copy.paymentLede}
                 </p>
                 {!STRIPE_PK ? (
                   <div className="ck-error">

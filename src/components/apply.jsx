@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import { Reveal, Eyebrow, Btn } from "./primitives.jsx";
+import { useSiteContent } from "../content.js";
 
 export default function Apply() {
+  const { apply: copy } = useSiteContent();
   const [form, setForm] = useState({ name: "", email: "", date: "", group: "2", about: "", how: "" });
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const upcoming = [
-    "Jul 05 vs PHI", "Jul 17 vs SDP", "Jul 20 vs SFG", "Jul 22 vs SFG",
-    "Aug 06 vs MIN", "Aug 08 vs CHC", "Aug 18 vs OAK", "Aug 21 vs DET",
-    "Aug 23 vs DET",
-  ];
+  const upcoming = copy.upcomingGames;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -40,11 +38,11 @@ export default function Apply() {
       <section id="apply" data-screen-label="05 Sit Next To Me" className="section apply">
         <div className="section-inner apply-success">
           <Reveal>
-            <Eyebrow index="05">You're In</Eyebrow>
+            <Eyebrow index="05">{copy.successEyebrow}</Eyebrow>
           </Reveal>
           <Reveal delay={120}>
             <h2 className="display h-lg" style={{marginTop: 24}}>
-              See you at the<br/><em>K</em>.
+              {copy.successTitle}<br/><em>{copy.successTitleEmphasis}</em>.
             </h2>
           </Reveal>
           <Reveal delay={240}>
@@ -65,10 +63,7 @@ export default function Apply() {
           </Reveal>
           <Reveal delay={360}>
             <p className="lede" style={{marginTop: 32}}>
-              I read every application personally. If we're a fit, I'll email
-              you within a week with confirmation, parking instructions, and a
-              meet-up spot before first pitch. The seats are next to mine — so
-              come ready to talk baseball for nine innings.
+              {copy.successText}
             </p>
           </Reveal>
           <Reveal delay={480}>
@@ -85,10 +80,10 @@ export default function Apply() {
     <section id="apply" data-screen-label="05 Sit Next To Me" className="section apply">
       <div className="section-inner">
         <div className="apply-head">
-          <Reveal><Eyebrow index="05">Sit Next To Me</Eyebrow></Reveal>
+          <Reveal><Eyebrow index="05">{copy.eyebrow}</Eyebrow></Reveal>
           <Reveal delay={120}>
             <h2 className="display h-xl apply-title">
-              Sit <em>next to me</em>.
+              {copy.title} <em>{copy.titleEmphasis}</em>.
             </h2>
           </Reveal>
         </div>
@@ -97,31 +92,27 @@ export default function Apply() {
           <div className="apply-text">
             <Reveal delay={200}>
               <p className="lede">
-                I have three Diamond Club seats at Kauffman and I'm at every home
-                game. The seat in the middle is mine. The two on either side are
-                yours, if you want them. Bring a friend. Bring your dad. Bring
-                whoever you want to spend nine innings hearing stories with.
+                {copy.lede}
               </p>
             </Reveal>
             <Reveal delay={300}>
               <ul className="apply-list">
-                <li><span className="mono">01</span> Two seats next to mine. Diamond Club Box, Row 2, seats 1–3.</li>
-                <li><span className="mono">02</span> I'll be there too — stories, scorekeeping, peanuts.</li>
-                <li><span className="mono">03</span> Tell me why you want to come. Be honest.</li>
-                <li><span className="mono">04</span> No money changes hands. Just baseball.</li>
+                {copy.bullets.map((item, index) => (
+                  <li key={index}><span className="mono">{String(index + 1).padStart(2, "0")}</span> {item}</li>
+                ))}
               </ul>
             </Reveal>
             <Reveal delay={400}>
               <div className="apply-callout">
-                <span className="mono">DIAMOND CLUB BOX · ROW 2 · SEATS 1–3</span>
-                <span>Three seats, one of them is mine. The other two are why you're here.</span>
+                <span className="mono">{copy.calloutTag}</span>
+                <span>{copy.calloutText}</span>
               </div>
             </Reveal>
           </div>
 
           <Reveal delay={300} className="apply-card-wrap">
             <form className="apply-card" onSubmit={submit}>
-              <div className="apply-card-tag mono">APPLICATION · 2026 SEASON</div>
+              <div className="apply-card-tag mono">{copy.formTag}</div>
 
               <div className="apply-row">
                 <label className="apply-field">
@@ -199,7 +190,7 @@ export default function Apply() {
               </button>
 
               <p className="apply-fine mono">
-                I read every one. No bots. No bots. No bots.
+                {copy.finePrint}
               </p>
             </form>
           </Reveal>

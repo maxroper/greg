@@ -1,6 +1,8 @@
 import React from "react";
+import { useSiteContent } from "../content.js";
 
 export default function Footer() {
+  const { footer: copy } = useSiteContent();
   return (
     <footer className="footer">
       <div className="section-inner footer-inner">
@@ -9,13 +11,12 @@ export default function Footer() {
             <div className="footer-brand">
               <span className="footer-mark">GP</span>
               <div>
-                <div className="display h-sm" style={{margin: 0}}>Greg Pryor</div>
-                <div className="mono" style={{fontSize: 11, color: "var(--royal-blue-glow)", letterSpacing: "0.16em", marginTop: 4}}>№ 4 · ROYALS '85</div>
+                <div className="display h-sm" style={{margin: 0}}>{copy.brand}</div>
+                <div className="mono" style={{fontSize: 11, color: "var(--royal-blue-glow)", letterSpacing: "0.16em", marginTop: 4}}>{copy.subbrand}</div>
               </div>
             </div>
             <p className="footer-copy">
-              "I was axed three times by Billy Martin in the minors. <br/>
-              In '78, Bill Veeck gave me a job. The rest is in the book."
+              {copy.quote}
             </p>
           </div>
           <div className="footer-cols">
@@ -42,8 +43,8 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span className="mono">© 2026 GREG PRYOR. ALL RIGHTS RESERVED.</span>
-          <span className="mono">DESIGNED IN KANSAS CITY · BUILT WITH LOVE FOR THE GAME</span>
+          <span className="mono">{copy.copyright}</span>
+          <span className="mono">{copy.credit}</span>
         </div>
       </div>
     </footer>

@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Btn } from "./primitives.jsx";
 import { ASSETS } from "../data.js";
+import { useSiteContent } from "../content.js";
 
 export default function Hero() {
+  const { hero: copy } = useSiteContent();
   const sectionRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
@@ -52,33 +54,31 @@ export default function Hero() {
         <div className="hero-eyebrow-row" style={{ opacity: subOpacity }}>
           <span className="hero-badge">
             <span className="hero-badge-dot" />
-            <span className="mono">№ 4 · UTILITY INFIELDER · 1976–1986</span>
+            <span className="mono">{copy.badge}</span>
           </span>
         </div>
 
         <h1 className="display hero-title">
-          <span className="hero-title-line">Greg</span>
-          <span className="hero-title-line"><em>Pryor</em></span>
+          <span className="hero-title-line">{copy.firstName}</span>
+          <span className="hero-title-line"><em>{copy.lastName}</em></span>
         </h1>
 
         <div className="hero-divider" />
 
         <div className="hero-meta" style={{ opacity: subOpacity }}>
           <p className="hero-lede">
-            Former Major Leaguer. World Series Champion. Author. Speaker.
-            Podcaster. I have stories. I'm finally telling them.
+            {copy.lede}
           </p>
           <p className="hero-lede hero-lede-sub">
-            Forty years later, the dugout is quieter, but the memory is louder.
-            Pull up a seat.
+            {copy.sublede}
           </p>
 
           <div className="hero-cta-row">
             <Btn primary onClick={() => document.getElementById("book").scrollIntoView({behavior:"smooth"})}>
-              Read the book
+              {copy.primaryCta}
             </Btn>
             <Btn ghost onClick={() => document.getElementById("apply").scrollIntoView({behavior:"smooth"})}>
-              Sit next to me
+              {copy.secondaryCta}
             </Btn>
           </div>
         </div>
@@ -86,25 +86,15 @@ export default function Hero() {
 
       <div className="hero-strip">
         <div className="hero-strip-inner">
-          <div className="hero-stat">
-            <span className="hero-stat-num">10</span>
-            <span className="hero-stat-lbl">MLB SEASONS</span>
-          </div>
-          <div className="hero-strip-sep" />
-          <div className="hero-stat">
-            <span className="hero-stat-num">789</span>
-            <span className="hero-stat-lbl">GAMES</span>
-          </div>
-          <div className="hero-strip-sep hero-strip-sep-minors" />
-          <div className="hero-stat hero-stat-minors">
-            <span className="hero-stat-num">6</span>
-            <span className="hero-stat-lbl">YEARS IN THE MINORS</span>
-          </div>
-          <div className="hero-strip-sep" />
-          <div className="hero-stat hero-stat-ring">
-            <span className="hero-stat-num">1</span>
-            <span className="hero-stat-lbl">WORLD SERIES RING</span>
-          </div>
+          {copy.stats.map((stat, index) => (
+            <React.Fragment key={`${stat.value}-${stat.label}`}>
+              {index > 0 && <div className={`hero-strip-sep ${index === 2 ? "hero-strip-sep-minors" : ""}`} />}
+              <div className={`hero-stat ${index === 2 ? "hero-stat-minors" : ""} ${index === 3 ? "hero-stat-ring" : ""}`}>
+                <span className="hero-stat-num">{stat.value}</span>
+                <span className="hero-stat-lbl">{stat.label}</span>
+              </div>
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </section>

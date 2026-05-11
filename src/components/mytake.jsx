@@ -1,10 +1,11 @@
 import React, { useRef, useState } from "react";
 import { Reveal, Eyebrow } from "./primitives.jsx";
-import { TAKES, HOT_TAKE_ROYALS } from "../data.js";
+import { useSiteContent } from "../content.js";
 
 export default function MyTake() {
-  const [active, setActive] = useState(TAKES[0].id);
-  const current = TAKES.find(t => t.id === active);
+  const { mytake: copy } = useSiteContent();
+  const [active, setActive] = useState(copy.takes[0].id);
+  const current = copy.takes.find(t => t.id === active) || copy.takes[0];
   const detailRef = useRef(null);
 
   const onPick = (id) => {
@@ -22,23 +23,22 @@ export default function MyTake() {
     <section id="mytake" data-screen-label="06 My Take" className="section take">
       <div className="section-inner">
         <div className="take-head">
-          <Reveal><Eyebrow index="06">My Take</Eyebrow></Reveal>
+          <Reveal><Eyebrow index="06">{copy.eyebrow}</Eyebrow></Reveal>
           <Reveal delay={120}>
             <h2 className="display h-xl take-title">
-              I have <em>opinions</em><br/>about your baseball.
+              {copy.titleLine1} <em>{copy.titleEmphasis}</em><br/>{copy.titleLine2}
             </h2>
           </Reveal>
           <Reveal delay={240}>
             <p className="lede" style={{maxWidth: "56ch"}}>
-              The game I came up in is not the game on the field today. Some of
-              that's good. Some of it's not. Here's where I land.
+              {copy.lede}
             </p>
           </Reveal>
         </div>
 
         <div className="take-board">
           <div className="take-list">
-            {TAKES.map((t, i) => (
+            {copy.takes.map((t, i) => (
               <Reveal key={t.id} delay={i*80}>
                 <button
                   className={`take-row ${active === t.id ? "is-active" : ""}`}
@@ -80,13 +80,13 @@ export default function MyTake() {
         <Reveal delay={400}>
           <div className="hot-take">
             <div className="hot-take-stripe" />
-            <div className="hot-take-inner">
-              <div className="hot-take-header">
-                <span className="hot-take-tag mono">🔥 HOT TAKE OF THE WEEK</span>
-                <span className="hot-take-date mono">{HOT_TAKE_ROYALS.date} · {HOT_TAKE_ROYALS.team} · {HOT_TAKE_ROYALS.record}</span>
+              <div className="hot-take-inner">
+                <div className="hot-take-header">
+                <span className="hot-take-tag mono">{copy.weeklyTag}</span>
+                <span className="hot-take-date mono">{copy.weekly.date} · {copy.weekly.team} · {copy.weekly.record}</span>
               </div>
-              <p className="hot-take-body">{HOT_TAKE_ROYALS.take}</p>
-              <div className="hot-take-foot mono">— Greg, in his recliner, with a drink</div>
+              <p className="hot-take-body">{copy.weekly.take}</p>
+              <div className="hot-take-foot mono">{copy.weeklyFoot}</div>
             </div>
           </div>
         </Reveal>

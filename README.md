@@ -49,9 +49,11 @@ npm run worker:dev   # builds + serves the Worker on http://localhost:8787
 ├── src/
 │   ├── main.jsx                     # React mount
 │   ├── App.jsx                      # Section composition + tiny pathname router
+│   ├── content.js                   # Editable copy defaults + admin field schema
 │   ├── styles.css                   # Design system (tokens, .grain, .reveal)
-│   ├── data.js                      # All static content (stats, quotes, items)
+│   ├── data.js                      # Static stats, assets, fallbacks
 │   └── components/
+│       ├── admin.jsx                # /admin console: copy editor + orders
 │       ├── primitives.jsx           # Reveal, Btn, Eyebrow, ScrollProgress, hooks
 │       ├── nav.jsx                  # Top nav with active-section indicator
 │       ├── hero.jsx                 # Greg Pryor / № 4 hero with sweep animation
@@ -73,6 +75,7 @@ npm run worker:dev   # builds + serves the Worker on http://localhost:8787
 │   ├── favicon.svg                  # GP avatar mark
 │   ├── robots.txt
 │   ├── sitemap.xml
+│   ├── site-content.json            # Admin-managed copy overrides
 │   └── assets/                      # Photos, served at /assets/...
 │       ├── greg-yankees.jpg
 │       ├── greg-fielding.jpg
@@ -83,6 +86,9 @@ npm run worker:dev   # builds + serves the Worker on http://localhost:8787
 │   ├── create-payment-intent.js     # POST → creates Stripe PaymentIntent
 │   ├── create-checkout-session.js   # Legacy POST → creates Stripe session
 │   ├── stripe-webhook.js            # POST ← Stripe (signed); emails Greg per order
+│   ├── admin-login.js               # POST → password login for /admin
+│   ├── admin-content.js             # GET/PUT → read/save editable copy
+│   ├── admin-orders.js              # GET/PATCH → Stripe orders + fulfillment
 │   ├── apply.js                     # POST → Diamond Club application
 │   ├── speaking-request.js          # POST → speaking-engagement inquiry
 │   ├── facebook-posts.js            # GET → live FB posts (10-min edge cache)
@@ -183,6 +189,26 @@ method domains so Apple Pay / Google Pay / Link can appear.
 
 ---
 
+## Admin console
+
+`/admin` is a password-protected operations console. It has two tabs:
+
+- **Orders** reads Stripe PaymentIntents created by checkout, shows customer
+  contact, shipping, personalization, totals, and lets Greg mark fulfillment
+  status, carrier, tracking number, and internal notes. It also prints a
+  packing slip and shows an internal timeline plus a safe handoff to Stripe for
+  refunds/cancellations. Those fulfillment fields are saved back to Stripe
+  metadata. Status changes in this admin do not email customers automatically.
+- **Site copy** edits the copy model in `src/content.js`. Saving commits
+  `public/site-content.json` to `main` through the GitHub API, which triggers
+  the normal Cloudflare deploy.
+
+Required env vars: `ADMIN_PASSWORD` for login, `STRIPE_SECRET_KEY` for order
+data, and `GITHUB_ADMIN_TOKEN` for copy saves. See `SETUP.md` for the exact
+GitHub token permissions.
+
+---
+
 ## Form submissions
 
 Both `/api/apply` and `/api/speaking-request` log to the Cloudflare console
@@ -210,23 +236,14 @@ See SETUP.md for the token/key generation steps.
 
 ## Editing content
 
-Static copy lives in `src/data.js`:
+Most visible site copy is editable at `/admin` once `ADMIN_PASSWORD` is set.
+The defaults and admin field schema live in `src/content.js`; saved production
+overrides live in `public/site-content.json`.
 
-| Constant | What it controls |
-|---|---|
-| `BOOK_QUOTES` | Endorsement blurbs in the book section |
-| `PRYOR_STATS` | Career stats (highlights, by-year, totals) |
-| `MEMORABILIA` | The 10 items in the bento grid + their descriptions |
-| `TAKES` | "My Take" hot takes (5 baseball-rule opinions) |
-| `HOT_TAKE_ROYALS` | The pinned "hot take of the week" callout |
-| `PODCAST_EPS` | Podcast episode list (currently shown as "coming soon") |
-| `PLAYLISTS` | Static fallback playlists (real ones come from Spotify when configured) |
-| `FB_POSTS` | Static fallback posts (real ones come from Facebook when configured) |
-| `NAV_ITEMS` | Top nav labels + section IDs |
-| `ASSETS` | Hero/about photo paths (point at files in `/public/assets/`) |
-
-To update **upcoming Royals home games** for the apply form, edit the
-`upcoming` array in `src/components/apply.jsx`.
+Static/non-copy data still lives in `src/data.js`: career stats, image paths,
+fallback Facebook/Spotify content, and memorabilia media wiring. To add new
+sections or fields to the admin editor, add the default value and field path in
+`src/content.js`, then render that value from the relevant component.
 
 ---
 

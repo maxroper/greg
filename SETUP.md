@@ -74,7 +74,44 @@ Stripe order — all email gpryor@lifepriority.com.
 
 ---
 
-## 3. Facebook — pull live posts into the page
+## 3. Admin console — orders + editable copy
+
+**URL:** `https://<your-domain>/admin`
+
+Used for: viewing Stripe orders, marking orders processing/shipped/cancelled,
+adding carrier/tracking/internal notes, and editing site copy by committing
+`public/site-content.json` to `main`.
+
+**To do:**
+- [ ] Choose a strong admin password and add it as an encrypted Cloudflare
+      secret.
+- [ ] Create a fine-grained GitHub personal access token:
+  - Resource owner: `maxroper`
+  - Repository access: only `greg`
+  - Permissions: **Contents → Read and write**
+- [ ] Add that token as an encrypted Cloudflare secret so the admin can save
+      copy edits. If you skip this, `/admin` can still load and preview copy,
+      but the **Save copy** button stays disabled.
+- [ ] Make sure `STRIPE_SECRET_KEY` is set too; the Orders tab reads orders
+      from Stripe PaymentIntents and writes fulfillment state back to Stripe
+      metadata.
+
+**Cloudflare env vars:**
+| Variable | Value | Encrypt |
+|---|---|---|
+| `ADMIN_PASSWORD` | strong password for `/admin` | ✓ |
+| `ADMIN_SESSION_SECRET` | optional separate session-signing secret | ✓ |
+| `GITHUB_ADMIN_TOKEN` | fine-grained GitHub token with Contents read/write | ✓ |
+| `GITHUB_REPO` | `maxroper/greg` |   |
+| `GITHUB_BRANCH` | `main` |   |
+
+> Admin copy saves commit straight to `main`, which triggers the normal
+> Cloudflare deployment. Order fulfillment updates stay in Stripe metadata.
+> The admin intentionally does not send automatic customer shipment emails.
+
+---
+
+## 4. Facebook — pull live posts into the page
 
 **Account:** https://developers.facebook.com (Greg signs in with the Facebook
 account that admins the **Greg Pryor 85** page)
@@ -109,7 +146,7 @@ account that admins the **Greg Pryor 85** page)
 
 ---
 
-## 4. Spotify — Greg's playlists
+## 5. Spotify — Greg's playlists
 
 **Account:** https://developer.spotify.com/dashboard (sign in with Greg's
 Spotify account)
@@ -143,7 +180,7 @@ Spotify account)
 
 ---
 
-## 5. Google Analytics — page-view tracking
+## 6. Google Analytics — page-view tracking
 
 **Account:** https://analytics.google.com
 
@@ -172,7 +209,7 @@ Spotify account)
 
 ---
 
-## 6. Custom domain
+## 7. Custom domain
 
 Right now the site lives at `greg.4rq8k9tm7t.workers.dev` (or similar
 auto-generated URL). For launch the site will live at
@@ -219,6 +256,11 @@ so preserve email DNS before changing nameservers.
 | `RESEND_API_KEY` | All email notifications | ✓ | Sending emails via Resend |
 | `NOTIFY_TO` | All email notifications |   | Where Greg gets emails (default `gpryor@lifepriority.com`) |
 | `NOTIFY_FROM` | All email notifications |   | Email "From" header (must be a verified domain) |
+| `ADMIN_PASSWORD` | Admin console | ✓ | Password for `/admin` |
+| `ADMIN_SESSION_SECRET` | Admin console *(optional)* | ✓ | Separate HMAC secret for admin sessions |
+| `GITHUB_ADMIN_TOKEN` | Admin copy saves | ✓ | Commits `public/site-content.json` to `main` |
+| `GITHUB_REPO` | Admin copy saves *(optional)* |   | Defaults to `maxroper/greg` |
+| `GITHUB_BRANCH` | Admin copy saves *(optional)* |   | Defaults to `main` |
 | `FB_PAGE_ID` | Facebook section |   | Page slug (default `GregPryor85`) |
 | `FB_PAGE_ACCESS_TOKEN` | Facebook section | ✓ | Never-expiring Page Access Token |
 | `SPOTIFY_CLIENT_ID` | Music section | ✓ | Spotify app credentials |
@@ -241,3 +283,5 @@ so preserve email DNS before changing nameservers.
 - The "Sit next to me" and speaking forms (submissions log to the Cloudflare
   console; without `RESEND_API_KEY` no email is sent)
 - Facebook + Spotify sections (use static fallback data that matches the design)
+- `/admin` renders visually, but login requires `ADMIN_PASSWORD`; order data
+  requires `STRIPE_SECRET_KEY`; copy saves require `GITHUB_ADMIN_TOKEN`

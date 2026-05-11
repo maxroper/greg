@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Reveal, Eyebrow, Btn } from "./primitives.jsx";
-import { BOOK_QUOTES } from "../data.js";
+import { useSiteContent } from "../content.js";
 import Checkout from "./checkout.jsx";
 
 export default function Book() {
+  const { book: copy } = useSiteContent();
   const [tab, setTab] = useState("direct");
   const AMAZON_URL = "https://www.amazon.com/Day-Yankees-Made-Me-Shave-ebook/dp/B08FV8TLGW";
   const BOOK_COVER = "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1554949076i/45018799.jpg";
@@ -13,7 +14,7 @@ export default function Book() {
     <section id="book" data-screen-label="01 The Book" className="section book">
       <div className="section-inner">
         <Reveal>
-          <Eyebrow index="01">The Book</Eyebrow>
+          <Eyebrow index="01">{copy.eyebrow}</Eyebrow>
         </Reveal>
 
         <div className="book-grid">
@@ -42,15 +43,12 @@ export default function Book() {
           <div className="book-text-col">
             <Reveal delay={200}>
               <h2 className="display h-lg book-title">
-                A clubhouse seat to <em>baseball's strangest decade</em>.
+                {copy.titleBefore} <em>{copy.titleEmphasis}</em>.
               </h2>
             </Reveal>
             <Reveal delay={300}>
               <p className="lede" style={{ marginTop: 24 }}>
-                In 1977 I was a 27-year-old career minor leaguer with a Yankees contract,
-                a mustache, and a dwindling supply of optimism. Then George Steinbrenner
-                walked through the clubhouse with a razor in his hand. This is what
-                happened next — and the ten years that followed.
+                {copy.lede}
               </p>
             </Reveal>
 
@@ -58,18 +56,17 @@ export default function Book() {
               <div className="book-pull">
                 <div className="book-pull-mark">"</div>
                 <p>
-                  Greg saw things from the bench most of us never noticed on the field.
-                  The book is the next best thing to being in the dugout.
+                  {copy.pullQuote}
                 </p>
-                <span className="book-pull-attr mono">— George Brett, HOF, Royals 3B</span>
+                <span className="book-pull-attr mono">- {copy.pullAttribution}</span>
               </div>
             </Reveal>
 
             <Reveal delay={500}>
               <div className="book-tabs">
                 {[
-                  { k: "direct",  l: "Direct from Greg", sub: "Signed · $32.00" },
-                  { k: "amazon", l: "Amazon", sub: "Kindle & Hardcover" },
+                  { k: "direct",  l: copy.directTabLabel, sub: copy.directTabSub },
+                  { k: "amazon", l: copy.amazonTabLabel, sub: copy.amazonTabSub },
                 ].map((t) => (
                   <button key={t.k} className={`book-tab ${tab === t.k ? "is-active" : ""}`} onClick={() => setTab(t.k)}>
                     <span className="book-tab-l">{t.l}</span>
@@ -80,12 +77,12 @@ export default function Book() {
               <div className="book-cta">
                 {tab === "direct" && (
                   <Btn primary href="#" onClick={(e) => { e.preventDefault(); setCheckoutOpen(true); }}>
-                    Order signed copy
+                    {copy.directCta}
                   </Btn>
                 )}
                 {tab === "amazon" && (
                   <Btn primary href={AMAZON_URL} target="_blank" rel="noopener">
-                    Buy on Amazon
+                    {copy.amazonCta}
                   </Btn>
                 )}
               </div>
@@ -93,7 +90,7 @@ export default function Book() {
 
             <Reveal delay={650}>
               <div className="book-quotes">
-                {[BOOK_QUOTES[2], BOOK_QUOTES[3]].map((q, i) => (
+                {copy.quotes.slice(2, 4).map((q, i) => (
                   <div className="book-quote" key={i}>
                     <p className="book-quote-text">"{q.text}"</p>
                     <div className="book-quote-attr">
@@ -108,12 +105,12 @@ export default function Book() {
             <Reveal delay={800}>
               <div className="book-teaser">
                 <div className="book-teaser-bar">
-                  <span className="mono">Book 2</span>
+                  <span className="mono">{copy.teaserTag}</span>
                   <span className="book-teaser-dot" />
-                  <span className="mono">Coming in 2027</span>
+                  <span className="mono">{copy.teaserDate}</span>
                 </div>
                 <p>
-                  27 new chapters, including the never-before-told story of…
+                  {copy.teaserText}
                 </p>
               </div>
             </Reveal>

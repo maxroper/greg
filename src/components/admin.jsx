@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { CONTENT_SECTIONS, normalizeSiteContent } from "../content.js";
 
 const TOKEN_KEY = "greg-admin-token";
+const DEMO_ORDERS_KEY = "greg-admin-demo-orders";
 const ORDER_STATUSES = ["new", "processing", "shipped", "cancelled", "refunded"];
 const DEMO_ORDERS = [
   {
@@ -415,12 +416,21 @@ function OrdersAdmin({ token, onAuthExpired }) {
   const [demoMode, setDemoMode] = useState(false);
 
   useEffect(() => {
-    loadOrders();
+    const storedDemoOrders = readStoredDemoOrders();
+    if (storedDemoOrders.length) {
+      setOrders(storedDemoOrders);
+      setSelectedId(storedDemoOrders[0].id);
+      setDemoMode(true);
+      setLoading(false);
+    } else {
+      loadOrders();
+    }
   }, []);
 
   const loadOrders = async () => {
     setLoading(true);
     setError("");
+    clearStoredDemoOrders();
     try {
       const data = await adminFetch("/api/admin/orders", { token, onAuthExpired });
       setOrders(data.orders || []);
@@ -434,15 +444,8 @@ function OrdersAdmin({ token, onAuthExpired }) {
   };
 
   const loadDemoOrders = () => {
-    const demoOrders = DEMO_ORDERS.map((order) => ({
-      ...order,
-      fulfillment: { ...order.fulfillment },
-      customer: { ...order.customer },
-      address: { ...order.address },
-      items: { ...order.items },
-      totals: { ...order.totals },
-      payment: { ...order.payment },
-    }));
+    const demoOrders = cloneDemoOrders();
+    saveStoredDemoOrders(demoOrders);
     setOrders(demoOrders);
     setSelectedId(demoOrders[0].id);
     setStatusFilter("all");
@@ -483,8 +486,13 @@ function OrdersAdmin({ token, onAuthExpired }) {
             updatedAt: new Date().toISOString(),
           },
         };
-        setOrders((current) => current.map((item) => item.id === order.id ? next : item));
+        setOrders((current) => {
+          const nextOrders = current.map((item) => item.id === order.id ? next : item);
+          saveStoredDemoOrders(nextOrders);
+          return nextOrders;
+        });
         setSelectedId(order.id);
+        setDemoMode(true);
         return;
       }
       const data = await adminFetch("/api/admin/orders", {
@@ -518,14 +526,14 @@ function OrdersAdmin({ token, onAuthExpired }) {
             <h2>{counts.all} total{demoMode ? " demo" : ""}</h2>
           </div>
           <div className="admin-actions">
-            <button className="admin-ghost" onClick={loadDemoOrders} disabled={loading}>Load demo orders</button>
+            <button className="admin-ghost" onClick={loadDemoOrders} disabled={loading}>{demoMode ? "Reset demo orders" : "Load demo orders"}</button>
             <button className="admin-ghost" onClick={loadOrders} disabled={loading}>Refresh Stripe</button>
           </div>
         </div>
 
         {demoMode && (
           <div className="admin-note">
-            Demo orders are examples only. Edits stay in this browser session and never touch Stripe or customers.
+            Demo orders are examples only. They stay in this browser after refresh; use Refresh Stripe to leave demo mode. Edits never touch Stripe or customers.
           </div>
         )}
 
@@ -868,6 +876,38 @@ async function adminFetch(path, { token, onAuthExpired, method = "GET", body } =
   }
   if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
+}
+
+function cloneDemoOrders() {
+  return DEMO_ORDERS.map((order) => ({
+    ...order,
+    fulfillment: { ...order.fulfillment },
+    customer: { ...order.customer },
+    address: { ...order.address },
+    items: { ...order.items },
+    totals: { ...order.totals },
+    payment: { ...order.payment },
+  }));
+}
+
+function readStoredDemoOrders() {
+  try {
+    const raw = localStorage.getItem(DEMO_ORDERS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((order) => order?.demo && order.id);
+  } catch {
+    return [];
+  }
+}
+
+function saveStoredDemoOrders(orders) {
+  localStorage.setItem(DEMO_ORDERS_KEY, JSON.stringify(orders.filter((order) => order.demo)));
+}
+
+function clearStoredDemoOrders() {
+  localStorage.removeItem(DEMO_ORDERS_KEY);
 }
 
 function getPath(obj, path) {

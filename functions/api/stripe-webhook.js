@@ -1,9 +1,9 @@
 // POST /api/stripe-webhook - receives Stripe events.
 //
 // Verifies the signature on every request (rejects unsigned/spoofed calls), then
-// for `checkout.session.completed` events emails Greg the full order details
-// including the personalization metadata (recipient, inscription, ball
-// inscription, shipping address) attached to the session.
+// emails Greg the full order details including the personalization metadata
+// (recipient, inscription, ball inscription, shipping address) attached to the
+// PaymentIntent. It also still understands the older Checkout Session shape.
 //
 // Required env vars:
 //   STRIPE_WEBHOOK_SECRET  - whsec_... from the Stripe dashboard webhook
@@ -13,7 +13,7 @@
 //
 // Setup: in Stripe dashboard -> Developers -> Webhooks -> Add endpoint:
 //   URL:    https://<your-domain>/api/stripe-webhook
-//   Events: checkout.session.completed
+//   Events: payment_intent.succeeded
 // Copy the signing secret to the Cloudflare env var STRIPE_WEBHOOK_SECRET.
 
 export async function onRequestPost({ request, env }) {

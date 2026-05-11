@@ -22,7 +22,7 @@ export default function Apply() {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
 
-    // Submit to API endpoint (Cloudflare Pages Function). Falls back gracefully if missing.
+    // Submit to API endpoint. Falls back gracefully if missing.
     try {
       await fetch("/api/apply", {
         method: "POST",

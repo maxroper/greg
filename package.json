@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "pages:dev": "vite build && wrangler pages dev dist",
-    "deploy": "vite build && wrangler pages deploy dist --project-name=greg"
+    "worker:dev": "vite build && wrangler dev",
+    "check:deploy-env": "node scripts/check-deploy-env.js",
+    "deploy": "npm run check:deploy-env && vite build && wrangler deploy"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.3.0",

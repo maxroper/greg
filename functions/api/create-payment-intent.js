@@ -1,6 +1,6 @@
-// Cloudflare Pages Function: POST /api/create-payment-intent
+// Cloudflare Worker route: POST /api/create-payment-intent
 //
-// Creates a Stripe PaymentIntent for a fully custom in-page checkout (using
+// Creates a Stripe PaymentIntent for the in-page checkout (using
 // the Payment Element + Express Checkout Element on the client). Server
 // computes the price from a trusted catalog so the client cannot manipulate
 // the amount. Personalisation + shipping live in the intent's metadata so

@@ -1,10 +1,10 @@
-// Cloudflare Pages Function: POST /api/create-checkout-session
+// Legacy Cloudflare Worker route: POST /api/create-checkout-session
 //
 // Creates a Stripe Checkout Session and returns its hosted-payment URL.
 // The client redirects the browser to that URL; Stripe handles card collection,
 // PCI compliance, 3DS, Apple Pay, etc.
 //
-// Required env vars (set in Cloudflare Pages -> Settings -> Environment Variables):
+// Required env vars:
 //   STRIPE_SECRET_KEY  - your Stripe secret key (sk_test_... or sk_live_...)
 //
 // Optional:

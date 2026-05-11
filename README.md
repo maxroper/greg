@@ -6,7 +6,7 @@ Facebook posts, Spotify playlists, podcast teaser, contact.
 
 - **Stack:** React 18 + Vite (no TypeScript, no framework lock-in)
 - **Hosting:** Cloudflare Workers + Static Assets (auto-deploys from GitHub)
-- **Payments:** Stripe Checkout (hosted page, PCI-compliant)
+- **Payments:** Stripe Payment Element + Express Checkout Element (PCI-compliant)
 - **Email:** Resend (form submissions + order alerts to gpryor@lifepriority.com)
 - **Analytics:** Google Analytics 4 (opt-in via env var)
 
@@ -31,7 +31,7 @@ need Wrangler:
 ```bash
 cp .dev.vars.example .dev.vars
 # fill in the keys you want to test against (Stripe test key, Resend, etc.)
-npm run pages:dev    # builds + serves with Wrangler on http://localhost:8788
+npm run worker:dev   # builds + serves the Worker on http://localhost:8787
 ```
 
 ---
@@ -56,7 +56,7 @@ npm run pages:dev    # builds + serves with Wrangler on http://localhost:8788
 │       ├── nav.jsx                  # Top nav with active-section indicator
 │       ├── hero.jsx                 # Greg Pryor / № 4 hero with sweep animation
 │       ├── book.jsx                 # Book section (opens Checkout modal)
-│       ├── checkout.jsx             # 4-step modal → POST /api/create-checkout-session
+│       ├── checkout.jsx             # 4-step modal → POST /api/create-payment-intent
 │       ├── checkout-banner.jsx      # ?checkout=success|cancel toast on return
 │       ├── memorabilia.jsx          # Bento grid + detail modal
 │       ├── mytake.jsx               # Hot takes
@@ -80,7 +80,8 @@ npm run pages:dev    # builds + serves with Wrangler on http://localhost:8788
 │       └── memorabilia/             # 10 jpgs of Greg's items
 │
 ├── functions/api/                   # Route handlers, dispatched by worker.js
-│   ├── create-checkout-session.js   # POST → creates Stripe session
+│   ├── create-payment-intent.js     # POST → creates Stripe PaymentIntent
+│   ├── create-checkout-session.js   # Legacy POST → creates Stripe session
 │   ├── stripe-webhook.js            # POST ← Stripe (signed); emails Greg per order
 │   ├── apply.js                     # POST → Diamond Club application
 │   ├── speaking-request.js          # POST → speaking-engagement inquiry
@@ -114,8 +115,20 @@ What happens on a push:
 
 To deploy from your local machine instead (e.g. for testing):
 ```bash
+VITE_STRIPE_PUBLISHABLE_KEY=pk_live_... npm run deploy
+```
+
+or put the public Stripe key in an ignored `.env.production` file before
+running:
+
+```bash
 npm run deploy
 ```
+
+`npm run deploy` intentionally refuses to build if
+`VITE_STRIPE_PUBLISHABLE_KEY` is missing or malformed. Wrangler secrets cover
+runtime values like `STRIPE_SECRET_KEY`; the publishable key is needed by Vite
+at build time so the checkout can initialize Stripe.js.
 
 For the full credential setup walkthrough — Stripe, Resend, Facebook, Spotify,
 GA4, custom domain — see **[SETUP.md](SETUP.md)**.
@@ -142,7 +155,7 @@ GA4, custom domain — see **[SETUP.md](SETUP.md)**.
 
 `functions/api/*.js` files are imported by `worker.js` and dispatched by
 URL path. They each export `onRequestPost` / `onRequestGet` functions that
-take `{ request, env, ctx }` (the standard Cloudflare Pages Functions signature).
+take `{ request, env, ctx }`.
 
 ---
 
@@ -150,22 +163,23 @@ take `{ request, env, ctx }` (the standard Cloudflare Pages Functions signature)
 
 1. User picks edition + personalisation + shipping in the in-page modal
    (`src/components/checkout.jsx`, steps 1–3).
-2. On step 4 ("Pay with Stripe"), the client POSTs the order to
-   `/api/create-checkout-session`.
-3. The Pages Function recomputes prices from a server-side trusted catalog
-   (the client cannot alter the amount), creates a Stripe Checkout Session
-   with personalisation stored as session `metadata`, and returns the hosted
-   payment URL.
-4. The browser redirects to Stripe Checkout. Stripe handles card collection,
-   3DS, Apple Pay, PCI compliance.
-5. On completion Stripe redirects back to `/?checkout=success&session_id=…`.
+2. Before rendering the payment step, the client POSTs the order to
+   `/api/create-payment-intent`.
+3. The Worker recomputes prices from a server-side trusted catalog (the client
+   cannot alter the amount), creates a Stripe PaymentIntent, stores
+   personalisation as intent `metadata`, and returns the `client_secret`.
+4. The modal renders Stripe's Payment Element plus Express Checkout buttons.
+   Stripe handles card collection, 3DS, wallets, and PCI scope.
+5. On completion Stripe redirects back to `/?checkout=success`.
    `CheckoutBanner` reads the query string and shows a confirmation toast.
-6. Stripe also fires `checkout.session.completed` to `/api/stripe-webhook`,
+6. Stripe also fires `payment_intent.succeeded` to `/api/stripe-webhook`,
    which verifies the signature and emails Greg the full order details
    (recipient name, inscription, ball inscription, shipping address).
 
-Switching test → live: replace `STRIPE_SECRET_KEY` in Cloudflare's Production
-environment with `sk_live_…` and update the webhook signing secret.
+Switching test → live: replace `STRIPE_SECRET_KEY` and
+`VITE_STRIPE_PUBLISHABLE_KEY` in Cloudflare with live-mode keys, update the
+webhook signing secret, and register the production domain in Stripe's payment
+method domains so Apple Pay / Google Pay / Link can appear.
 
 ---
 

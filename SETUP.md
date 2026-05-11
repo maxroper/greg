@@ -2,11 +2,12 @@
 
 Everything Greg (or you) needs to obtain to make the production site fully
 functional. Each section ends with the env vars to add in
-**Cloudflare Pages → your project → Settings → Variables and Secrets → Production**.
+**Cloudflare Workers & Pages → greg → Settings → Variables and Secrets**.
 
 Keys marked **Encrypt** in the Cloudflare UI should be saved as encrypted
-secrets, not plaintext vars. After adding any new vars, click **Retry
-deployment** so they bind to a fresh build.
+secrets, not plaintext vars. Vars beginning with `VITE_` are build-time values:
+after changing one, redeploy so Vite can bake the public value into the client
+bundle.
 
 ---
 
@@ -18,13 +19,18 @@ deployment** so they bind to a fresh build.
 - [ ] Verify business identity in Stripe (required to accept live payments)
 - [ ] Add Greg's bank account for payouts
 - [ ] Decide: launch with **Test mode** keys (no real charges) or **Live mode**
-- [ ] Get the secret key: Developers → API keys → reveal "Secret key"
+- [ ] Get API keys: Developers → API keys
   - Test: starts with `sk_test_…`
   - Live: starts with `sk_live_…`
+  - Publishable keys start with `pk_test_…` or `pk_live_…`
 - [ ] Add a webhook: Developers → Webhooks → Add endpoint
   - Endpoint URL: `https://<your-domain>/api/stripe-webhook`
-  - Event to send: `checkout.session.completed`
+  - Event to send: `payment_intent.succeeded`
   - Copy the signing secret it gives you (`whsec_…`)
+- [ ] Register the site under Stripe → Settings → Payment method domains
+  - Add `thedaytheyankeesmademeshave.com`
+  - Add `www.thedaytheyankeesmademeshave.com` if the `www` host is enabled
+  - Register in both sandbox/test mode and live mode so wallet buttons can show
 
 **Cloudflare env vars:**
 | Variable | Value | Encrypt |
@@ -32,6 +38,11 @@ deployment** so they bind to a fresh build.
 | `STRIPE_SECRET_KEY` | `sk_live_…` (or `sk_test_…` to start) | ✓ |
 | `VITE_STRIPE_PUBLISHABLE_KEY` | `pk_live_…` (or `pk_test_…`) — meant to be public, do **not** encrypt |   |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_…` from the webhook page | ✓ |
+
+> The current checkout uses Stripe Payment Element, so the webhook event that
+> fulfills/orders emails is `payment_intent.succeeded`. The code can still
+> understand the older `checkout.session.completed` shape, but the live webhook
+> should include `payment_intent.succeeded`.
 
 ---
 
@@ -161,21 +172,40 @@ Spotify account)
 
 ---
 
-## 6. Custom domain (optional but recommended)
+## 6. Custom domain
 
 Right now the site lives at `greg.4rq8k9tm7t.workers.dev` (or similar
 auto-generated URL). For launch the site will live at
 `thedaytheyankeesmademeshave.com`.
 
+As of the last check, `thedaytheyankeesmademeshave.com` uses GoDaddy
+nameservers (`ns35.domaincontrol.com`, `ns36.domaincontrol.com`) and points at
+the existing WP Engine/WordPress site. The domain also has an Outlook MX record,
+so preserve email DNS before changing nameservers.
+
 **To do:**
-- [ ] Point `thedaytheyankeesmademeshave.com` at the Worker (Cloudflare → Workers
-      → your worker → **Settings → Domains & Routes** → Add Custom Domain)
-- [ ] Cloudflare walks you through DNS config (CNAME or A records). If the
-      domain is registered through Cloudflare, it's one click. Cert is auto-
-      issued.
+- [ ] In Cloudflare, add `thedaytheyankeesmademeshave.com` as a site/zone and
+      review the DNS records Cloudflare imports from GoDaddy.
+- [ ] Before switching nameservers, confirm these records exist in Cloudflare:
+  - Apex/root website record (will be replaced by the Worker custom domain)
+  - `www` record or redirect target
+  - Existing MX record:
+    `0 thedaytheyankeesmademeshave-com.mail.protection.outlook.com`
+  - Existing TXT records, including Microsoft verification and SPF
+- [ ] In GoDaddy Domain Portfolio → domain → DNS → Nameservers, choose
+      **I'll use my own nameservers** and enter the two nameservers Cloudflare
+      assigned for the zone.
+- [ ] Wait for Cloudflare to mark the zone active. GoDaddy says nameserver
+      updates often take about an hour, but can take up to 48 hours globally.
+- [ ] Point the domain at the Worker (Cloudflare → Workers & Pages → `greg` →
+      Settings → Domains & Routes → Add → Custom Domain)
+  - Add `thedaytheyankeesmademeshave.com`
+  - Add `www.thedaytheyankeesmademeshave.com` or create a redirect from `www`
+    to the apex domain
 - [ ] Once live, set `PUBLIC_BASE_URL=https://thedaytheyankeesmademeshave.com` so
       Stripe success/cancel URLs use the canonical origin.
 - [ ] Update the Stripe webhook endpoint URL (Section 1) to use the new domain.
+- [ ] Register the same domain(s) in Stripe payment method domains (Section 1).
 
 ---
 

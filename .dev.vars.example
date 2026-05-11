@@ -1,4 +1,4 @@
-# Copy to .dev.vars for local Pages Functions development with `wrangler pages dev`.
+# Copy to .dev.vars for local Worker development with `npm run worker:dev`.
 # .dev.vars is gitignored. Never commit real keys.
 
 # --- Stripe (required for checkout) ---
@@ -8,11 +8,11 @@
 STRIPE_SECRET_KEY=
 
 # Build-time publishable key (pk_test_... or pk_live_...). Safe to expose;
-# this gets inlined into the client bundle so the embedded checkout iframe
-# can talk to Stripe.
+# this gets inlined into the client bundle so Stripe Elements can initialize.
 VITE_STRIPE_PUBLISHABLE_KEY=
 
-# Webhook signing secret from Stripe Dashboard > Developers > Webhooks
+# Webhook signing secret from Stripe Dashboard > Developers > Webhooks.
+# The live endpoint should listen for payment_intent.succeeded.
 STRIPE_WEBHOOK_SECRET=
 
 # --- Email notifications (optional) ---
@@ -56,4 +56,4 @@ SPOTIFY_USER_ID=
 
 # --- Optional ---
 # Override the public origin used in Stripe success/cancel URLs.
-# PUBLIC_BASE_URL=https://gregpryor.com
+# PUBLIC_BASE_URL=https://thedaytheyankeesmademeshave.com

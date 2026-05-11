@@ -8,6 +8,9 @@
   },
   "vars": {
     // Public, non-secret defaults can live here.
+    // Build-time Vite values (VITE_STRIPE_PUBLISHABLE_KEY, VITE_GA_MEASUREMENT_ID)
+    // must also be available to `vite build`; for local deploys use the shell or
+    // an ignored .env.production file.
     // Real secrets (STRIPE_SECRET_KEY, RESEND_API_KEY) go in the
     // Cloudflare dashboard under Settings -> Variables and Secrets.
   }

@@ -3,6 +3,185 @@ import { CONTENT_SECTIONS, normalizeSiteContent } from "../content.js";
 
 const TOKEN_KEY = "greg-admin-token";
 const ORDER_STATUSES = ["new", "processing", "shipped", "cancelled", "refunded"];
+const DEMO_ORDERS = [
+  {
+    id: "demo_1001",
+    demo: true,
+    created: 1778176800,
+    createdAt: "2026-05-07T14:00:00.000Z",
+    amount: 4057,
+    currency: "USD",
+    stripeStatus: "succeeded",
+    paymentMethod: "card",
+    receiptUrl: "",
+    description: "Demo order: signed book",
+    payment: {
+      method: "card",
+      status: "succeeded",
+      paid: true,
+      refunded: false,
+      amountRefunded: 0,
+      receiptUrl: "",
+      riskLevel: "normal",
+      failureMessage: "",
+    },
+    customer: {
+      name: "Mike Thompson",
+      email: "mike.thompson@example.com",
+      phone: "(913) 555-0142",
+    },
+    address: {
+      line1: "4221 Mission Road",
+      line2: "",
+      city: "Kansas City",
+      state: "MO",
+      postalCode: "64110",
+      country: "US",
+    },
+    items: {
+      edition: "signed",
+      quantity: 1,
+      addBall: false,
+      shipMethod: "standard",
+      recipient: "Dad",
+      inscription: "Happy Father's Day. Keep watching baseball.",
+      ballInscription: "",
+    },
+    totals: {
+      subtotal: 3200,
+      shipping: 595,
+      tax: 262,
+      total: 4057,
+    },
+    fulfillment: {
+      status: "new",
+      trackingNumber: "",
+      carrier: "",
+      notes: "Gift order. Customer asked for Father's Day delivery if possible.",
+      shippedAt: "",
+      updatedAt: "",
+    },
+    metadata: {},
+  },
+  {
+    id: "demo_1002",
+    demo: true,
+    created: 1778090400,
+    createdAt: "2026-05-06T14:00:00.000Z",
+    amount: 14587,
+    currency: "USD",
+    stripeStatus: "succeeded",
+    paymentMethod: "card",
+    receiptUrl: "",
+    description: "Demo order: signed books + ball",
+    payment: {
+      method: "card",
+      status: "succeeded",
+      paid: true,
+      refunded: false,
+      amountRefunded: 0,
+      receiptUrl: "",
+      riskLevel: "normal",
+      failureMessage: "",
+    },
+    customer: {
+      name: "Sarah Delgado",
+      email: "sarah.delgado@example.com",
+      phone: "(816) 555-0198",
+    },
+    address: {
+      line1: "1908 Brookside Blvd",
+      line2: "Apt 3B",
+      city: "Kansas City",
+      state: "MO",
+      postalCode: "64113",
+      country: "US",
+    },
+    items: {
+      edition: "signed",
+      quantity: 1,
+      addBall: true,
+      shipMethod: "express",
+      recipient: "Eli",
+      inscription: "Dream big and keep your glove down.",
+      ballInscription: "To Eli - keep swinging.",
+    },
+    totals: {
+      subtotal: 12100,
+      shipping: 1495,
+      tax: 992,
+      total: 14587,
+    },
+    fulfillment: {
+      status: "processing",
+      trackingNumber: "",
+      carrier: "",
+      notes: "Needs ball display case packed with extra padding.",
+      shippedAt: "",
+      updatedAt: "2026-05-07T16:30:00.000Z",
+    },
+    metadata: {},
+  },
+  {
+    id: "demo_1003",
+    demo: true,
+    created: 1778004000,
+    createdAt: "2026-05-05T14:00:00.000Z",
+    amount: 5994,
+    currency: "USD",
+    stripeStatus: "succeeded",
+    paymentMethod: "card",
+    receiptUrl: "",
+    description: "Demo order: two unsigned books",
+    payment: {
+      method: "card",
+      status: "succeeded",
+      paid: true,
+      refunded: false,
+      amountRefunded: 0,
+      receiptUrl: "",
+      riskLevel: "normal",
+      failureMessage: "",
+    },
+    customer: {
+      name: "Tom Whitaker",
+      email: "tom.whitaker@example.com",
+      phone: "",
+    },
+    address: {
+      line1: "705 College Avenue",
+      line2: "",
+      city: "Columbia",
+      state: "MO",
+      postalCode: "65201",
+      country: "US",
+    },
+    items: {
+      edition: "standard",
+      quantity: 2,
+      addBall: false,
+      shipMethod: "standard",
+      recipient: "",
+      inscription: "",
+      ballInscription: "",
+    },
+    totals: {
+      subtotal: 4990,
+      shipping: 595,
+      tax: 409,
+      total: 5994,
+    },
+    fulfillment: {
+      status: "shipped",
+      trackingNumber: "9400 1111 2222 3333 4444 55",
+      carrier: "USPS",
+      notes: "Demo shipped order with tracking.",
+      shippedAt: "2026-05-06T18:10:00.000Z",
+      updatedAt: "2026-05-06T18:10:00.000Z",
+    },
+    metadata: {},
+  },
+];
 
 export default function Admin() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
@@ -233,6 +412,7 @@ function OrdersAdmin({ token, onAuthExpired }) {
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [query, setQuery] = useState("");
+  const [demoMode, setDemoMode] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -245,11 +425,31 @@ function OrdersAdmin({ token, onAuthExpired }) {
       const data = await adminFetch("/api/admin/orders", { token, onAuthExpired });
       setOrders(data.orders || []);
       setSelectedId((current) => current || data.orders?.[0]?.id || "");
+      setDemoMode(false);
     } catch (err) {
       setError(err.message || "Unable to load orders.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadDemoOrders = () => {
+    const demoOrders = DEMO_ORDERS.map((order) => ({
+      ...order,
+      fulfillment: { ...order.fulfillment },
+      customer: { ...order.customer },
+      address: { ...order.address },
+      items: { ...order.items },
+      totals: { ...order.totals },
+      payment: { ...order.payment },
+    }));
+    setOrders(demoOrders);
+    setSelectedId(demoOrders[0].id);
+    setStatusFilter("all");
+    setQuery("");
+    setError("");
+    setDemoMode(true);
+    setLoading(false);
   };
 
   const filteredOrders = useMemo(() => {
@@ -275,6 +475,18 @@ function OrdersAdmin({ token, onAuthExpired }) {
     setSaving(true);
     setError("");
     try {
+      if (order.demo) {
+        const next = {
+          ...order,
+          fulfillment: {
+            ...fulfillment,
+            updatedAt: new Date().toISOString(),
+          },
+        };
+        setOrders((current) => current.map((item) => item.id === order.id ? next : item));
+        setSelectedId(order.id);
+        return;
+      }
       const data = await adminFetch("/api/admin/orders", {
         token,
         onAuthExpired,
@@ -303,10 +515,19 @@ function OrdersAdmin({ token, onAuthExpired }) {
         <div className="admin-panel-head">
           <div>
             <p className="admin-kicker">Orders</p>
-            <h2>{counts.all} total</h2>
+            <h2>{counts.all} total{demoMode ? " demo" : ""}</h2>
           </div>
-          <button className="admin-ghost" onClick={loadOrders} disabled={loading}>Refresh</button>
+          <div className="admin-actions">
+            <button className="admin-ghost" onClick={loadDemoOrders} disabled={loading}>Load demo orders</button>
+            <button className="admin-ghost" onClick={loadOrders} disabled={loading}>Refresh Stripe</button>
+          </div>
         </div>
+
+        {demoMode && (
+          <div className="admin-note">
+            Demo orders are examples only. Edits stay in this browser session and never touch Stripe or customers.
+          </div>
+        )}
 
         <div className="admin-filters">
           <input
@@ -332,7 +553,10 @@ function OrdersAdmin({ token, onAuthExpired }) {
         {loading ? (
           <div className="admin-empty">Loading Stripe orders...</div>
         ) : filteredOrders.length === 0 ? (
-          <div className="admin-empty">No orders match this view.</div>
+          <div className="admin-empty">
+            <p>No orders match this view.</p>
+            <button className="admin-ghost" onClick={loadDemoOrders}>Load demo orders</button>
+          </div>
         ) : (
           <div className="admin-order-list">
             {filteredOrders.map((order) => (
@@ -343,8 +567,9 @@ function OrdersAdmin({ token, onAuthExpired }) {
               >
                 <span className={`admin-pill admin-pill-${order.fulfillment.status}`}>{order.fulfillment.status}</span>
                 <strong>{order.customer.name || "Unnamed order"}</strong>
-                <span>{order.customer.email || order.id}</span>
-                <span>{formatMoney(order.amount, order.currency)} · {formatDate(order.createdAt)}</span>
+                {order.demo && <span className="admin-demo-badge">DEMO ORDER</span>}
+                <span className="admin-order-email">{order.customer.email || order.id}</span>
+                <span className="admin-order-meta">{formatMoney(order.amount, order.currency)} · {formatDate(order.createdAt)}</span>
               </button>
             ))}
           </div>
@@ -401,14 +626,20 @@ function OrderDetail({ order, saving, onSave }) {
       <div className="admin-panel-head">
         <div>
           <p className="admin-kicker">{order.id}</p>
-          <h2>{order.customer.name || "Order"}</h2>
+          <h2>{order.customer.name || "Order"} {order.demo && <span className="admin-heading-badge">Demo</span>}</h2>
           <p className="admin-muted">{formatDateTime(order.createdAt)} · Stripe: {order.stripeStatus}</p>
         </div>
         <div className="admin-actions">
           <button className="admin-ghost" onClick={openPackingSlip}>Print packing slip</button>
-          <a className="admin-ghost-link" href={stripePaymentUrl} target="_blank" rel="noopener noreferrer">Open Stripe</a>
+          {!order.demo && <a className="admin-ghost-link" href={stripePaymentUrl} target="_blank" rel="noopener noreferrer">Open Stripe</a>}
         </div>
       </div>
+
+      {order.demo && (
+        <div className="admin-note">
+          This is a demo order for previewing the admin. Saving fulfillment changes will only update this temporary demo view.
+        </div>
+      )}
 
       <div className="admin-detail-grid">
         <InfoCard title="Contact">
@@ -449,7 +680,7 @@ function OrderDetail({ order, saving, onSave }) {
           </div>
           <div className="admin-payment-actions">
             {order.receiptUrl && <a className="admin-ghost-link" href={order.receiptUrl} target="_blank" rel="noopener noreferrer">View receipt</a>}
-            <a className="admin-ghost-link" href={stripePaymentUrl} target="_blank" rel="noopener noreferrer">Refund in Stripe</a>
+            {!order.demo && <a className="admin-ghost-link" href={stripePaymentUrl} target="_blank" rel="noopener noreferrer">Refund in Stripe</a>}
           </div>
         </div>
         <p className="admin-muted admin-note-inline">
@@ -982,10 +1213,33 @@ adminStyles.textContent = `
 .admin-order-row strong {
   color: var(--bone);
 }
-.admin-order-row span:nth-child(3),
-.admin-order-row span:nth-child(4) {
+.admin-order-email,
+.admin-order-meta,
+.admin-demo-badge {
   grid-column: 2;
+}
+.admin-order-email,
+.admin-order-meta {
   font-size: 12px;
+}
+.admin-demo-badge,
+.admin-heading-badge {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgba(255, 217, 120, 0.42);
+  color: #ffd978;
+  background: rgba(255, 217, 120, 0.08);
+  border-radius: 999px;
+  padding: 3px 7px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.admin-heading-badge {
+  vertical-align: middle;
+  margin-left: 8px;
+  font-size: 10px;
 }
 .admin-pill {
   align-self: start;
@@ -1006,6 +1260,9 @@ adminStyles.textContent = `
   padding: 28px;
   color: var(--bone-dim);
   text-align: center;
+}
+.admin-empty p {
+  margin: 0 0 14px;
 }
 .admin-detail-grid {
   display: grid;

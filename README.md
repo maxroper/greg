@@ -199,6 +199,8 @@ method domains so Apple Pay / Google Pay / Link can appear.
   packing slip and shows an internal timeline plus a safe handoff to Stripe for
   refunds/cancellations. Those fulfillment fields are saved back to Stripe
   metadata. Status changes in this admin do not email customers automatically.
+  The Orders tab also has a **Load demo orders** button; those sample orders are
+  labeled and never save to Stripe.
 - **Site copy** edits the copy model in `src/content.js`. Saving commits
   `public/site-content.json` to `main` through the GitHub API, which triggers
   the normal Cloudflare deploy.

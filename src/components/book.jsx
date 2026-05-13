@@ -112,6 +112,9 @@ export default function Book() {
                 <p>
                   {copy.teaserText}
                 </p>
+                <a className="book-teaser-link" href="/bonus-stories">
+                  Read the 27 bonus stories
+                </a>
               </div>
             </Reveal>
           </div>
@@ -222,5 +225,13 @@ bookStyles.textContent = `
 .book-teaser-bar { display: flex; align-items: center; gap: 14px; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--royal-blue-glow); margin-bottom: 12px; }
 .book-teaser-dot { width: 4px; height: 4px; background: var(--royal-blue-glow); border-radius: 50%; }
 .book-teaser p { margin: 0; font-family: var(--serif); font-size: 18px; color: var(--bone); }
+.book-teaser-link {
+  display: inline-flex;
+  margin-top: 18px;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+}
+.book-teaser-link:hover { color: var(--gold-bright); }
 `;
 document.head.appendChild(bookStyles);

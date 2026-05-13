@@ -13,6 +13,7 @@ import CheckoutBanner from "./components/checkout-banner.jsx";
 import Analytics from "./components/analytics.jsx";
 import Privacy from "./components/privacy.jsx";
 import Admin from "./components/admin.jsx";
+import BonusStoriesPage from "./components/bonus-stories.jsx";
 
 // Tiny pathname-based router. The Worker serves index.html for any non-asset
 // non-API request, so /privacy hits this app and we render the right page.
@@ -37,6 +38,13 @@ export default function App() {
         <Analytics />
         <Privacy />
       </>
+    );
+  }
+  if (path.startsWith("/bonus-stories")) {
+    return (
+      <SiteContentProvider>
+        <BonusStoriesPage />
+      </SiteContentProvider>
     );
   }
   return (

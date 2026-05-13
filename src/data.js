@@ -1,4 +1,4 @@
-// Data: Greg Pryor career stats, book quotes, podcast eps, memorabilia, etc.
+// Data: Greg Pryor career stats, book quotes, memorabilia, etc.
 // Image paths reference files in /public, served at the site root.
 
 export const ASSETS = {
@@ -68,13 +68,6 @@ export const BOOK_QUOTES = [
   { who: "Joe Posnanski", role: "Sportswriter, The Athletic", text: "A backup infielder's memoir has no business being this funny, this honest, or this readable. It's a small miracle." },
 ];
 
-export const PODCAST_EPS = [
-  { n: 1, title: "Why I Got Cut by Billy Martin (Three Times)", duration: "47:12", date: "Coming Soon" },
-  { n: 2, title: "The Pine Tar Game, From My Seat", duration: "52:08", date: "Coming Soon" },
-  { n: 3, title: "Steinbrenner Called Me a Dumbass", duration: "39:44", date: "Coming Soon" },
-  { n: 4, title: "Yacht Rock & The '85 Bus Rides", duration: "41:30", date: "Coming Soon" },
-];
-
 export const MEMORABILIA = [
   { id: 1, title: "1985 World Series Trophy", category: "Championship", year: "1985", size: "tall",
     img: "/assets/memorabilia/world-series-trophy.jpg",
@@ -122,13 +115,6 @@ export const HOT_TAKE_ROYALS = {
   record: "23-18",
   take: "Six weeks in and the rotation is finally healthy. Lugo at a 3.10. Wacha eating his innings. Witt slugging like a man with something to prove. Memorial Day is when the standings stop lying — if we're still above water on June 1, the front office better be on the phone. Add a setup man. Add a lefty bat. Don't get cute.",
 };
-
-export const PLAYLISTS = [
-  { name: "Yacht Rock Essentials", count: 87, hours: "5h 42m", color: "#7a3b2e", emoji: "⛵" },
-  { name: "Psychedelic '70s", count: 64, hours: "4h 18m", color: "#BD9B60", emoji: "🌀" },
-  { name: "Bus Ride Mixtape '85", count: 42, hours: "2h 51m", color: "#004687", emoji: "📻" },
-  { name: "Slow Burn Sundays", count: 51, hours: "3h 27m", color: "#2d4a3e", emoji: "🌅" },
-];
 
 export const NAV_ITEMS = [
   { id: "hero", label: "Home", index: "00" },

@@ -10,7 +10,6 @@ import * as apply from "./functions/api/apply.js";
 import * as speakingRequest from "./functions/api/speaking-request.js";
 import * as stripeWebhook from "./functions/api/stripe-webhook.js";
 import * as facebookPosts from "./functions/api/facebook-posts.js";
-import * as spotifyPlaylists from "./functions/api/spotify-playlists.js";
 import * as adminLogin from "./functions/api/admin-login.js";
 import * as adminContent from "./functions/api/admin-content.js";
 import * as adminOrders from "./functions/api/admin-orders.js";
@@ -22,7 +21,6 @@ const ROUTES = {
   "/api/speaking-request": speakingRequest,
   "/api/stripe-webhook": stripeWebhook,
   "/api/facebook-posts": facebookPosts,
-  "/api/spotify-playlists": spotifyPlaylists,
   "/api/admin/login": adminLogin,
   "/api/admin/content": adminContent,
   "/api/admin/orders": adminOrders,

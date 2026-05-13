@@ -1,20 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Reveal, Eyebrow, Btn, Picture } from "./primitives.jsx";
-import { ASSETS, PRYOR_STATS, PLAYLISTS, FB_POSTS, FB_PAGE_URL } from "../data.js";
+import { ASSETS, PRYOR_STATS, FB_POSTS, FB_PAGE_URL } from "../data.js";
 import RequestDateModal from "./request-date-modal.jsx";
 import { useSiteContent } from "../content.js";
-
-function SpotifyMark() {
-  return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-      <circle cx="12" cy="12" r="12" fill="#1DB954" />
-      <path
-        fill="#fff"
-        d="M17.4 16.55a.75.75 0 0 1-1.03.25c-2.83-1.73-6.4-2.12-10.59-1.16a.75.75 0 1 1-.34-1.46c4.59-1.05 8.55-.6 11.7 1.34.36.22.47.69.26 1.03zm1.43-3.18a.94.94 0 0 1-1.29.31c-3.24-1.99-8.18-2.57-12.01-1.4a.94.94 0 0 1-.55-1.8c4.4-1.34 9.86-.69 13.6 1.6.45.27.59.86.25 1.29zm.13-3.32C15.13 8 8.6 7.74 4.92 8.85a1.13 1.13 0 0 1-.66-2.16c4.27-1.3 11.4-1 15.7 1.55a1.13 1.13 0 0 1-1.16 1.94z"
-      />
-    </svg>
-  );
-}
 
 // Fetched once for all <About> instances on the page; ref-counted so we don't
 // spam /api/facebook-posts on every render.
@@ -43,31 +31,6 @@ function useFacebookPosts(enabled) {
   return posts;
 }
 
-let spotifyCache = null;
-function useSpotifyPlaylists(enabled) {
-  const [items, setItems] = useState(spotifyCache?.items || null);
-  useEffect(() => {
-    if (!enabled) return;
-    if (spotifyCache) { setItems(spotifyCache.items); return; }
-    let cancelled = false;
-    fetch("/api/spotify-playlists")
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((data) => {
-        if (cancelled) return;
-        const next = Array.isArray(data?.playlists) && data.playlists.length > 0 ? data.playlists : PLAYLISTS;
-        spotifyCache = { items: next };
-        setItems(next);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        spotifyCache = { items: PLAYLISTS };
-        setItems(PLAYLISTS);
-      });
-    return () => { cancelled = true; };
-  }, [enabled]);
-  return items;
-}
-
 export default function About({ show }) {
   const content = useSiteContent();
   const aboutCopy = content.about;
@@ -79,7 +42,6 @@ export default function About({ show }) {
   const [statTab, setStatTab] = useState("highlights");
   const [requestOpen, setRequestOpen] = useState(false);
   const fbPosts = useFacebookPosts(visible("facebook"));
-  const playlists = useSpotifyPlaylists(visible("music"));
 
   const isIntro = visible("intro");
   const sectionId = isIntro ? "about" : null;
@@ -256,68 +218,6 @@ export default function About({ show }) {
           </div>
         </div>
         <RequestDateModal open={requestOpen} onClose={() => setRequestOpen(false)} />
-       </>}
-
-       {visible("music") && <>
-        <div id="music" data-screen-label="The Music" className="about-music">
-          <Reveal>
-            <div className="about-section-head">
-              <h3 className="display h-md">The Music</h3>
-              <span className="mono about-section-sub">PLAYLISTS · YACHT ROCK · PSYCHEDELIC '70s</span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <p className="lede" style={{maxWidth: "60ch"}}>
-              I've been collecting records since high school. Mostly yacht rock,
-              some old psych. The bus rides got long — you needed something to put
-              on the headphones. Here are the playlists I keep coming back to.
-            </p>
-          </Reveal>
-
-          <div className="about-playlists">
-            {(playlists || Array.from({ length: 4 })).map((p, i) =>
-              p ? (
-                <Reveal key={p.id || p.name || i} delay={i * 100}>
-                  <a
-                    className="about-pl-card"
-                    style={{ "--pl-color": p.color || "#004687" }}
-                    href={p.externalUrl || "https://open.spotify.com/"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div
-                      className={`about-pl-art ${p.image ? "has-image" : ""}`}
-                      style={p.image ? { backgroundImage: `url(${p.image})` } : undefined}
-                    >
-                      {!p.image && <span className="about-pl-emoji">{p.emoji || "♪"}</span>}
-                    </div>
-                    <div className="about-pl-body">
-                      <div className="about-pl-name">{p.name}</div>
-                      <div className="about-pl-meta mono">
-                        {p.count} {p.count === 1 ? "TRACK" : "TRACKS"}
-                        {p.hours ? ` · ${p.hours}` : ""}
-                      </div>
-                    </div>
-                    <span className="about-pl-play" aria-label="Open in Spotify">
-                      <SpotifyMark />
-                    </span>
-                  </a>
-                </Reveal>
-              ) : (
-                <Reveal key={`sk-${i}`} delay={i * 100}>
-                  <div className="about-pl-card about-pl-skeleton" aria-hidden>
-                    <div className="about-pl-art about-pl-art-sk" />
-                    <div className="about-pl-body">
-                      <div className="fb-sk-bar fb-sk-bar-line" style={{ width: "60%" }} />
-                      <div className="fb-sk-bar fb-sk-bar-when" />
-                    </div>
-                  </div>
-                </Reveal>
-              )
-            )}
-          </div>
-        </div>
        </>}
 
        {visible("health") && <>
@@ -505,13 +405,12 @@ export default function About({ show }) {
 const aboutStyles = document.createElement("style");
 aboutStyles.textContent = `
 .about { background: var(--navy-900); }
-#speaking, #music, #health, #facebook, #contact { scroll-margin-top: 80px; }
+#speaking, #health, #facebook, #contact { scroll-margin-top: 80px; }
 .about-sub { padding: 32px 0; }
 .about-sub + .about-sub { padding-top: 0; }
 .about-sub + .section:not(.about-sub) { padding-top: 32px; }
 .section:not(.about-sub) + .about-sub { padding-top: 0; }
 .about-sub .about-speaking,
-.about-sub .about-music,
 .about-sub .about-stats-section,
 .about-sub .about-bio-row { margin-bottom: 0; }
 .about-sub .lp-band { margin: 0; }
@@ -586,8 +485,6 @@ aboutStyles.textContent = `
 .about-total-num { font-family: var(--serif); font-size: 28px; color: var(--bone); font-weight: 500; }
 .about-total-lbl { font-size: 10px; letter-spacing: 0.18em; color: var(--gold); }
 
-.about-music { margin-bottom: 96px; }
-
 .about-speaking { margin-bottom: 96px; }
 .speaking-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
 @media (max-width: 980px) { .speaking-grid { grid-template-columns: 1fr; gap: 40px; } }
@@ -626,37 +523,6 @@ aboutStyles.textContent = `
   .speaking-list span { font-size: 13px; }
   .speaking-cta-note { font-size: 9px; }
 }
-
-.about-playlists { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
-@media (max-width: 768px) { .about-playlists { grid-template-columns: 1fr; } }
-.about-pl-card {
-  display: grid; grid-template-columns: 80px 1fr auto; gap: 20px; align-items: center;
-  padding: 16px; border: 1px solid var(--rule); background: rgba(255,255,255,0.02);
-  transition: border-color 200ms, transform 200ms, background 200ms;
-  text-decoration: none; color: inherit;
-}
-.about-pl-card:hover { border-color: #1DB954; transform: translateY(-2px); background: rgba(29,185,84,0.04); }
-.about-pl-art {
-  width: 80px; height: 80px;
-  background: linear-gradient(135deg, var(--pl-color), color-mix(in srgb, var(--pl-color) 60%, black));
-  background-size: cover; background-position: center;
-  display: grid; place-items: center;
-  font-size: 32px;
-  border-radius: 4px;
-  box-shadow: 0 6px 16px -8px rgba(0,0,0,0.5);
-}
-.about-pl-art.has-image { background-color: var(--navy-700); }
-.about-pl-art-sk { background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 100%); background-size: 200% 100%; animation: fbShimmer 1.6s ease-in-out infinite; }
-.about-pl-name { font-family: var(--serif); font-size: 18px; color: var(--bone); font-weight: 500; }
-.about-pl-meta { font-size: 11px; letter-spacing: 0.16em; color: var(--bone-dim); margin-top: 4px; }
-.about-pl-play {
-  width: 44px; height: 44px; border-radius: 50%;
-  display: grid; place-items: center;
-  margin-right: 8px;
-  opacity: 0.55;
-  transition: opacity 200ms, transform 200ms;
-}
-.about-pl-card:hover .about-pl-play { opacity: 1; transform: scale(1.06); }
 
 .about-contact { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 48px; border: 1px solid var(--rule); background: linear-gradient(135deg, rgba(189,155,96,0.06), rgba(189,155,96,0.01)); }
 @media (max-width: 768px) { .about-contact { grid-template-columns: 1fr; padding: 32px; } }

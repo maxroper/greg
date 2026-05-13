@@ -4,7 +4,7 @@ const EVENT_TYPES = [
   { id: "corporate", label: "Corporate / keynote" },
   { id: "fundraiser", label: "Fundraiser / charity" },
   { id: "private",    label: "Private dinner / Q&A" },
-  { id: "media",      label: "Media / podcast" },
+  { id: "media",      label: "Media / interview" },
   { id: "school",     label: "School / clinic" },
   { id: "other",      label: "Something else" },
 ];

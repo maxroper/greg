@@ -28,13 +28,11 @@ export default function BonusStoriesPage() {
         <section className="bonus-hero">
           <div className="bonus-hero-inner">
             <div>
-              <div className="bonus-kicker mono">Fictionalized Bonus Reader</div>
+              <div className="bonus-kicker mono">Bonus Reader</div>
               <h1 className="display bonus-title">27 more days in the baseball life.</h1>
             </div>
             <p className="bonus-lede">
               New imagined chapters built as a companion to <em>The Day The Yankees Made Me Shave</em>.
-              The stories are fictionalized, but the baseball frame uses public career facts, teams, dates,
-              stats, and real baseball lore.
             </p>
           </div>
         </section>

@@ -34,7 +34,8 @@ export const BONUS_STORIES = [
     paragraphs: [
       "The first time I tried out for a baseball team in Akron, I was standing on asphalt at Harris Elementary with a glove that had about as much padding as a folded newspaper. I was not thinking about the major leagues. I was thinking about not tripping over the crack between second base and whatever square of blacktop they were calling second base.",
       "One coach asked who wanted to pitch. My hand went up about halfway, which is the universal signal for either confidence or a boy hoping nobody notices him. I threw a strike. Then I threw another one. After eight or nine, the coach called the other coach over like he had discovered oil in Portage County.",
-      "That was the first day I felt like a ballplayer. Not a good one yet. Just a ballplayer. There is a difference. A good one knows where to throw with two outs and a runner on second. A ballplayer just wants the coach to say, 'Watch this kid,' one more time."
+      "That was the first day I felt like a ballplayer. Not a good one yet. Just a ballplayer. There is a difference. A good one knows where to throw with two outs and a runner on second. A ballplayer just wants the coach to say, 'Watch this kid,' one more time.",
+      "I went home and told my dad about it like I had struck out Ted Williams. Dad listened patiently, which was one of his gifts, then reminded me that throwing strikes on a playground did not make me Bob Feller. He was right, but I still slept that night like the Cleveland Indians had made a terrible mistake by not calling our house."
     ],
   },
   {
@@ -46,7 +47,8 @@ export const BONUS_STORIES = [
       "I went to Florida Southern because my brother Jeff could pitch and my dad could negotiate. Jeff had the arm. I had the same last name. That is not exactly a recruiting service, but in our family it counted as a plan.",
       "The scholarship was not large enough to make me rich or even comfortable. It was large enough to make me nervous. Once a school gives you money, even a little bit, you feel like somebody is going to walk by the batting cage with a clipboard and ask for it back.",
       "I was not a star my first year. I was barely an extra. I hit golf balls with more authority than baseballs, and if you had told me I would someday play 789 games in the major leagues, I would have asked if the league had expanded to include intramurals.",
-      "But that little scholarship kept me in uniform. Sometimes your whole life turns on a number so small you could lose it in a laundry pocket."
+      "But that little scholarship kept me in uniform. Sometimes your whole life turns on a number so small you could lose it in a laundry pocket.",
+      "The funny thing is, once I got there, the game did not immediately thank my dad for his creativity. I was still short, still skinny, and still trying to convince a baseball that my bat was not just passing through the neighborhood. I had a scholarship, yes, but for a while it felt more like a coupon."
     ],
   },
   {
@@ -58,7 +60,8 @@ export const BONUS_STORIES = [
       "In 1971 I was drafted by the Washington Senators, which was a thrill even if the Senators were already packing boxes for Texas. I was picked in the sixth round. George Brett went in the second round. Mike Schmidt went in the second round too. Jim Rice went in the first.",
       "That is a pretty good draft if you enjoy feeling ordinary. Those fellows went on to Cooperstown. I went on to Rocky Mount, Pittsfield, Spokane, Hawaii, and several bus stations where the sandwich machine looked like it had been stocked during the Eisenhower administration.",
       "Years later, I played with George in Kansas City. I never reminded him that we were in the same draft because he might have asked which round I went in, and I would have had to pretend my clubhouse phone was ringing.",
-      "Still, the draft did its job. It put us all on the same road. Some roads are paved with plaques. Mine had tollbooths, bad coffee, and an occasional ground ball in the hole."
+      "Still, the draft did its job. It put us all on the same road. Some roads are paved with plaques. Mine had tollbooths, bad coffee, and an occasional ground ball in the hole.",
+      "Nobody at the draft table wrote, 'Future backup infielder with a dry sense of humor and a suspicious relationship with batting averages.' If they had, it would have been the most accurate scouting report in the room. They probably just wrote, 'Can play. Needs work.' That covers about 90 percent of humanity."
     ],
   },
   {
@@ -70,7 +73,8 @@ export const BONUS_STORIES = [
       "Rocky Mount was where I learned that professional baseball was not college baseball with a paycheck. In college, if you made an error, your girlfriend still thought you were athletic. In pro ball, if you made an error, the bus got quieter and your manager started looking at the lineup card like it owed him money.",
       "I could hit a little, which kept me employed. I could also make enough errors at shortstop to keep the official scorer's wrist loose. There were nights I fielded the ball cleanly and then threw it somewhere a first baseman would need a cab to reach.",
       "But I loved it. I loved the lights, the tobacco-stained dugouts, the sound of cleats on concrete, and the ridiculous confidence every player has at 22. Everybody in A-ball thinks he is two good weeks away from the big leagues. Most of us are actually two good weeks away from a different bus.",
-      "Rocky Mount did not make me famous. It made me tougher, which lasts longer."
+      "Rocky Mount did not make me famous. It made me tougher, which lasts longer.",
+      "It also taught me the important minor league skill of laughing before somebody else laughed at you. When you boot two balls in one inning and the shortstop's dirt is still on your chest, dignity is already dead. You can either sulk, or you can say, 'Hell, I almost had the second one,' and get ready for the next bastard."
     ],
   },
   {
@@ -82,7 +86,8 @@ export const BONUS_STORIES = [
       "Every minor league clubhouse had one man who made the place feel like a show. In my memory, Gene Locklear could turn batting practice into a matinee. He had stories, a laugh you could hear over spikes on cement, and the wonderful habit of treating a Tuesday in Syracuse like it was Opening Day at Yankee Stadium.",
       "That is important in the minors because the minors can shrink you. You ride through the night, eat at places with laminated menus, and wake up in a city you have to identify by the logo on the dugout wall. A man with energy can keep a team from turning into luggage.",
       "Gene reminded me that baseball was supposed to be played with some joy. Not foolishness. Joy. There is a difference. Foolishness gets you picked off second. Joy gets you through a 1-for-18 without deciding to sell insurance.",
-      "A lot of great players never became famous enough. A lot of famous players were not as fun as Gene."
+      "A lot of great players never became famous enough. A lot of famous players were not as fun as Gene.",
+      "Gene could make a clubhouse forget the bus was leaving at 11:30, which is no small miracle. The bus was always leaving at 11:30. It did not matter what city, what league, or how bad the postgame spread was. Somewhere a driver was smoking near the luggage door and waiting for twenty-five grown men to finish acting like children."
     ],
   },
   {
@@ -94,7 +99,8 @@ export const BONUS_STORIES = [
       "A minor league glove is a diary with laces. Mine had sweat, pine tar, bus dust, and the kind of little-league optimism that refuses to die even after your farm director says you might not be an infielder.",
       "Hinton was one of those men who could pick up your glove and know your habits before you said a word. He looked at mine like a doctor looking at an X-ray. Then he started telling me everything wrong with it and, by extension, everything wrong with me.",
       "He was right, which was irritating. The pocket was too flat. The fingers were too loose. I was stabbing at balls instead of receiving them. I wanted him to say I needed a new glove. Instead he said I needed new hands.",
-      "I kept the glove and worked. Years later, when I played third, short, second, and even first in the big leagues, I thought about that day. A glove does not make you a player, but a good one will tell on you."
+      "I kept the glove and worked. Years later, when I played third, short, second, and even first in the big leagues, I thought about that day. A glove does not make you a player, but a good one will tell on you.",
+      "That is the thing about defense. You can talk brave all you want, but your glove knows if you are scared. It knows if your feet are dead. It knows if you are hoping the ball is hit to the other guy. Mine knew too much, and for a few years I wished it would shut up."
     ],
   },
   {
@@ -106,7 +112,8 @@ export const BONUS_STORIES = [
       "There are players you watch and think, 'I can do that.' Amos Otis was not one of those players. Amos did everything like he had been privately informed that the rest of us were using the wrong instruction manual.",
       "By the time I became his teammate, I had already heard enough Amos stories to fill a bat rack. One involved a corked bat, though in baseball every corked-bat story improves each time it changes clubhouses. By the fourth telling, the bat is hollow, the cork is imported, and the umpire is crying.",
       "What I remember is not whether the bat had anything in it. I remember how easy Amos made the game look. He ran like a center fielder should run, hit like a man who knew the count before the pitcher did, and played cards on the plane like he had invented percentages.",
-      "Charley Lau once wanted me to hit like Amos. That was like asking a Buick to become a Corvette because both have tires."
+      "Charley Lau once wanted me to hit like Amos. That was like asking a Buick to become a Corvette because both have tires.",
+      "Amos also had the face of a man who knew the joke before you told it. I liked that. Baseball has enough men explaining launch angles, leverage, and how they got screwed by a umpire in 1974. Sometimes you need a teammate who just looks at you, smiles, and makes you feel like the whole damn circus is at least worth the ticket."
     ],
   },
   {
@@ -118,7 +125,8 @@ export const BONUS_STORIES = [
       "When I got called up by Texas in 1976, I had been in professional baseball long enough to know that good news usually came with a connecting flight. I was 26 years old, which in baseball means you are either becoming a prospect or becoming a story older prospects tell to scare younger ones.",
       "The Rangers gave me a uniform and a number and, suddenly, every bus ride I had ever taken seemed worth it. I tried to act like I belonged. That is the first rule of the big leagues. The second rule is do not look too closely at the meal money or you will start smiling like a tourist.",
       "I played five games that year and got three hits in eight at-bats. That is a .375 average, which proves two things: I could hit major league pitching, and the season should have ended immediately for statistical fairness.",
-      "Nobody builds a statue for five games. But nobody can take away the first one."
+      "Nobody builds a statue for five games. But nobody can take away the first one.",
+      "The first time you put on a big league uniform, you also discover that your body has forgotten how to act normal. Your hands touch everything. Your hat feels new. Your belt feels important. You walk past a mirror and try not to grin like a fool, because grinning like a fool is exactly what a career minor leaguer would do."
     ],
   },
   {
@@ -130,7 +138,8 @@ export const BONUS_STORIES = [
       "Your first major league start is not like your first major league game. In your first game, you can sneak in. In your first start, your name is printed on the lineup card where everyone can see it, including the other team, your teammates, the trainer, and the peanut vendor who suddenly has an opinion.",
       "I remember checking the card more than once, as if somebody might erase me before first pitch. I had spent years trying to get there, but once I was there I had the strange thought that maybe there had been a clerical error.",
       "The big league infield looked cleaner than the minor league infields. The hops were truer, the lights brighter, and the ball somehow louder. Every grounder felt like it carried my resume inside it.",
-      "I do not remember every pitch. I remember the feeling. Pride mixed with fear is a powerful fuel. It will get you to the ball. Then your arm has to do the rest."
+      "I do not remember every pitch. I remember the feeling. Pride mixed with fear is a powerful fuel. It will get you to the ball. Then your arm has to do the rest.",
+      "You also learn immediately that the majors are not impressed by your personal journey. The ball is not moved by your perseverance. The runner at first does not care that your mother is proud. The game says, 'Congratulations, kid. Now don't throw this damn thing into the camera well.'"
     ],
   },
   {
@@ -142,7 +151,8 @@ export const BONUS_STORIES = [
       "I do not want to say the pitcher tried to kill me. That would be unfair. He may have only been trying to remove a few important inches from my future.",
       "In the minors and in spring training, pitchers had a way of introducing themselves high and tight. They did not have scouting reports. They had suggestions. One fastball came at me in a place no batting coach recommends. I hit the dirt with the grace of a folding chair falling down stairs.",
       "The catcher looked at me like I had interrupted something. The pitcher walked around the mound pretending the ball had slipped. Pitchers always do that. A ball can sail at your ribs at 90 miles an hour and the man on the mound will examine his fingers like the evidence is hiding under a cuticle.",
-      "I got back in the box because that is what you do. Also, I did not want him to think he had scared me. He had scared me badly, but baseball is mostly pretending at the right time."
+      "I got back in the box because that is what you do. Also, I did not want him to think he had scared me. He had scared me badly, but baseball is mostly pretending at the right time.",
+      "The next pitch might have been a strike. I do not know. My brain was still in the dirt looking for a missing rib. I took the toughest swing of my life, which means I barely moved and then acted like I had a plan. The dugout respects that kind of stupidity because most of them have done it too."
     ],
   },
   {
@@ -154,7 +164,8 @@ export const BONUS_STORIES = [
       "Baseball front offices can change your life while you are eating lunch. One minute you are wondering whether the clubhouse spread has enough mustard, and the next minute Gabe Paul, Ed Keating, Chris Chambliss, or somebody with a tie has placed you in a new city.",
       "Players talk about trades like they are business, which they are, but your suitcase does not know that. Your wife does not know that. Your car parked at the spring training complex certainly does not know that.",
       "The Yankees in those years had famous names stacked everywhere. Chambliss had already hit the home run that sent New York to the 1976 World Series, so standing near those fellows could make a utility infielder feel like an extra in a movie where everyone else had better lighting.",
-      "Still, you learn to say yes. Yes, sir. Where do I report? What time is the flight? Do they allow mustaches? That last question turned out to be more complicated than I hoped."
+      "Still, you learn to say yes. Yes, sir. Where do I report? What time is the flight? Do they allow mustaches? That last question turned out to be more complicated than I hoped.",
+      "The first rule of being a non-star is that you do not ask why too many times. Stars ask why. Utility infielders ask what gate the flight leaves from. If somebody in a suit tells you to report to a new city, you pack your underwear, find your glove, and hope your wife has not just bought curtains."
     ],
   },
   {
@@ -166,7 +177,8 @@ export const BONUS_STORIES = [
       "Every player believes he has a constitutional right to help umpires improve. Umpires do not share this interpretation of American law. Dale Ford was one of those umpires who could hear a complaint before you had finished forming it in your mouth.",
       "I was not a star, which meant I had to be careful. Reggie Jackson could argue a strike zone and become theater. I could argue a strike zone and become unemployed. So I developed what I thought was a mature approach: I muttered.",
       "Dale heard muttering the way a dog hears a whistle. I said something educational from the dugout, and he turned just enough to let me know my seminar had been canceled.",
-      "The funny thing is, most umpires are better than players admit. They miss pitches because pitches are hard to see. We miss sliders by a foot and call it timing. They miss the corner by an inch and we hold a congressional hearing."
+      "The funny thing is, most umpires are better than players admit. They miss pitches because pitches are hard to see. We miss sliders by a foot and call it timing. They miss the corner by an inch and we hold a congressional hearing.",
+      "I learned to choose my words carefully. 'That was close' is a comment. 'That was horse crap' is an invitation. A bench player should not hand an umpire an invitation unless he is packed and ready to shower by the fourth inning."
     ],
   },
   {
@@ -178,7 +190,8 @@ export const BONUS_STORIES = [
       "In 1978 the Yankees had a candy bar named after Reggie Jackson. This was not surprising. If anyone in baseball was going to become dessert, it was Reggie.",
       "The Reggie Bar had peanuts, caramel, chocolate, and confidence. On Opening Day at Yankee Stadium, Reggie hit a home run and the fans celebrated by throwing the bars onto the field. Baseball has rules for rain, darkness, fan interference, pine tar, and infield flies. I am not sure it had one for caramel-based admiration.",
       "From a player's point of view, it was impressive and dangerous. A candy bar thrown from the upper deck is still a candy bar, but gravity gives it ambition. Somewhere an outfielder was probably thinking, 'I hope Mickey Mantle never had a canned ham.'",
-      "The whole thing fit Reggie perfectly. Most players get applause. Reggie got airborne concessions."
+      "The whole thing fit Reggie perfectly. Most players get applause. Reggie got airborne concessions.",
+      "I wondered what would happen if they named a candy bar after me. First, it would have been smaller. Second, it probably would have been sold only in the back of a hardware store in Akron. Third, if I hit a home run and fans threw them on the field, the game would not be delayed long. A backup infielder's candy riot is over in about twelve seconds."
     ],
   },
   {
@@ -190,7 +203,8 @@ export const BONUS_STORIES = [
       "Dave Winfield looked like a man created by a committee that had been told to design an athlete and had a very large budget. He was tall, strong, fast, and carried himself like a stadium was something he might lease.",
       "When you stood on the infield and watched him walk to the plate, the ballpark changed size. The fences moved in. The shortstop got smaller. The third baseman, if he had any sense, checked whether his dental insurance was current.",
       "There are hitters you defend with positioning. There are hitters you defend with prayer. Winfield lived somewhere between the two. He could hit a ball so hard it made your glove feel decorative.",
-      "I admired him because he did not look like he was trying to impress anyone. That is when you know a player is different. The rest of us had to play well to prove we belonged. Dave looked like belonging had been mailed to him in advance."
+      "I admired him because he did not look like he was trying to impress anyone. That is when you know a player is different. The rest of us had to play well to prove we belonged. Dave looked like belonging had been mailed to him in advance.",
+      "A hard ground ball from a man like that changes your religion for half a second. You start out believing in fundamentals and end up believing in reflexes, leather, and the Lord. If you catch it, you are a good fielder. If you don't, you hope the official scorer has mercy and bad eyesight."
     ],
   },
   {
@@ -202,7 +216,8 @@ export const BONUS_STORIES = [
       "Ken Coleman was the voice of my childhood. When I was a kid in Ohio, he could make an Indians game sound like it was happening inside our living room. Years later, when I heard him around the Red Sox, it felt like running into an old teacher in a different school.",
       "Boston was an education. Fenway Park is not a ballpark as much as a test of geometry and nerves. The wall is too close, the corners are odd, and every fan seems to know your batting average, your middle name, and whether you missed the cutoff man in July.",
       "Hearing Ken's voice there made me think about how strange baseball life is. One decade you are a boy listening to Rocky Colavito. Another decade you are a grown man trying not to throw a ball into the Red Sox dugout.",
-      "Announcers carry memory. Players carry Advil. Between the two, the game survives."
+      "Announcers carry memory. Players carry Advil. Between the two, the game survives.",
+      "Ken could make a lazy fly ball sound dignified. That is a gift. I have seen players butcher a rundown, overthrow the cutoff man, and then explain it like they were victims of weather. A good announcer tells the truth with enough music that nobody throws a beer at the radio."
     ],
   },
   {
@@ -214,7 +229,8 @@ export const BONUS_STORIES = [
       "Tony La Russa was young, serious, and already looked like he was managing three innings ahead of the rest of us. In 1979, I played 143 games for the White Sox and hit .275, which gave me enough confidence to stand near Tony without flinching.",
       "At some point, there was talk of a tape showing my defense. This was before every player had a private video library and a swing coach with a laptop. Back then, if somebody had film of you, it felt like the FBI had opened a file.",
       "I liked defense because defense gave a utility player dignity. A bench player might not get four at-bats, but he can still turn a double play that keeps a starter from kicking the rosin bag into another county.",
-      "Tony appreciated that. He also appreciated preparation, matchups, and making you feel that if you missed a sign in the third inning, civilization might collapse. He was usually right about the sign."
+      "Tony appreciated that. He also appreciated preparation, matchups, and making you feel that if you missed a sign in the third inning, civilization might collapse. He was usually right about the sign.",
+      "Watching yourself on tape is a terrible experience. You think you are smooth, then the camera shows you taking an extra step, opening your hip, and making a throw with all the elegance of a man falling off a porch. Film does not care about your feelings. Neither did Tony, which is probably why he won so much."
     ],
   },
   {
@@ -226,7 +242,8 @@ export const BONUS_STORIES = [
       "The last two games of a season are strange when your team is not going anywhere. The clubhouse has the mood of a classroom before summer vacation, except everyone has sore hamstrings and a mortgage.",
       "In 1980 I played 122 games, enough to feel like I had been hit by every weather pattern in the American League. By late September, a player does not need a scouting report. He needs tape, coffee, and somebody to say, 'Only eighteen more innings.'",
       "Still, those games matter. Somebody is making a first impression. Somebody is trying to keep a job. Somebody is playing through a wrist that clicks like a turn signal. Baseball has a way of making meaningless games meaningful to the men inside them.",
-      "I played because I loved playing, and because when you are a utility infielder, every inning is an interview. The boss may not be watching. Then again, the boss may be the only one watching."
+      "I played because I loved playing, and because when you are a utility infielder, every inning is an interview. The boss may not be watching. Then again, the boss may be the only one watching.",
+      "September also creates some beautiful nonsense. Veterans start giving away bats they do not want to pack. Rookies sprint like they are being chased by the transaction page. Everybody says, 'See you next spring,' even when half the room knows damn well somebody is going to be selling Buicks by Christmas."
     ],
   },
   {
@@ -238,7 +255,8 @@ export const BONUS_STORIES = [
       "The first time somebody handed me a first baseman's mitt, I looked at it like it was a sofa cushion. Infielders are used to gloves. First basemen are issued furniture.",
       "I had spent my life moving toward baseballs. At first base, baseballs move toward you from every possible emotional state. Some throws are polite. Some throws are apologies. Some throws arrive spinning like they have escaped from a machine shop.",
       "The footwork bothered me most. At short or third, your feet make a play. At first, your feet save somebody else's play. That is a noble thing, but nobility can hurt when a throw pulls you into a runner the size of a refrigerator.",
-      "According to the record, I played 23 big league games at first and did not make an error. This proves I was either versatile or lucky. In baseball, the best careers include enough of both that nobody asks for a percentage."
+      "According to the record, I played 23 big league games at first and did not make an error. This proves I was either versatile or lucky. In baseball, the best careers include enough of both that nobody asks for a percentage.",
+      "First base also teaches humility because every infielder suddenly becomes your critic and your supplier. A shortstop will throw you a ball at your shoetops, then stare like you ordered it there. I wanted to say, 'Nice throw, jackass,' but I had been that jackass for years, so I kept quiet."
     ],
   },
   {
@@ -250,7 +268,8 @@ export const BONUS_STORIES = [
       "Harry Caray could interview a backup infielder and make it sound like a national emergency. We were in Anaheim, the sun was out, the grass looked expensive, and Harry had that look in his eye that meant a question was coming whether you were ready or not.",
       "I liked Harry because he made baseball feel alive. He did not ask questions like a man filling out a form. He asked them like a man who had just discovered a story behind your batting gloves and intended to tell America before the third inning.",
       "The problem with Harry was that he could make you funnier or dumber depending on the angle. I tried to stay short. Players should be careful around microphones. A bad quote can travel farther than a good relay throw.",
-      "I survived the interview, which is more than some hitters could say after facing Nolan Ryan. Harry moved on, probably to a hot dog, a beer, and three more opinions before sundown."
+      "I survived the interview, which is more than some hitters could say after facing Nolan Ryan. Harry moved on, probably to a hot dog, a beer, and three more opinions before sundown.",
+      "The great thing about Harry was that he did not need you to be famous. He could find entertainment in a utility man, a bad hop, or a vendor dropping mustard on his shoe. He loved baseball the way a man loves a noisy family: loudly, impatiently, and with no real interest in leaving."
     ],
   },
   {
@@ -262,7 +281,8 @@ export const BONUS_STORIES = [
       "Jimmy Piersall and Rod Carew were two baseball universities with different admissions offices. Piersall taught with volume. Carew taught with silence and a bat.",
       "If Jimmy had a thought, you received it immediately, with interest. He could say something helpful in a way that made you check for injuries. Rod, on the other hand, could take one smooth swing and make every batting manual in America feel too long.",
       "I was the kind of player who listened to both. You have to. Utility men are collectors. We collect gloves, signs, lineup-card possibilities, and bits of advice from men who know something we do not.",
-      "The lesson was simple. Baseball has room for many kinds of genius. Some genius hits .300 and says almost nothing. Some genius tells you exactly what is wrong with your swing while holding a cup of coffee and insulting your shoes."
+      "The lesson was simple. Baseball has room for many kinds of genius. Some genius hits .300 and says almost nothing. Some genius tells you exactly what is wrong with your swing while holding a cup of coffee and insulting your shoes.",
+      "Piersall could make an insult sound like a scouting report. Carew could make silence feel like a lecture. Between them, I figured out that if two baseball men tell you the same thing in completely different ways, you should probably shut up and listen."
     ],
   },
   {
@@ -274,7 +294,8 @@ export const BONUS_STORIES = [
       "Clubhouse music in my era was democracy with volume. One guy wanted Marvin Gaye. One guy wanted the Doobie Brothers. One guy wanted silence, which made him suspicious. Then somebody would put on Styx and Dennis DeYoung would arrive through the speakers like he had purchased the air rights.",
       "I have always believed a team can be judged by how it handles a song everyone secretly likes. Ballplayers are proud men. They will not admit they know every word to a chorus unless the team is winning or the bus is dark.",
       "The minor leagues taught us to appreciate music because music covered up everything else: the engine, the card game, the trainer snoring, the pitcher explaining for the ninth time how he would have been in Triple-A if not for one umpire in Burlington.",
-      "Dennis could hit notes none of us could hit. We could hit cutoff men, sometimes. Everybody has a gift."
+      "Dennis could hit notes none of us could hit. We could hit cutoff men, sometimes. Everybody has a gift.",
+      "There is nothing more revealing than a ballplayer pretending he does not like a song while tapping both feet. He will spit, adjust his cup, make a face, and then come in perfectly on the chorus. Clubhouse masculinity is a fragile thing. One keyboard solo and half the room is exposed."
     ],
   },
   {
@@ -286,7 +307,8 @@ export const BONUS_STORIES = [
       "People think minor leaguers are simple because we spend so much time in uniforms and so little time choosing restaurants. That is unfair. A minor league clubhouse is full of men doing math constantly.",
       "We calculated meal money, batting averages, service time, option years, bus mileage, and the odds that the next town had a laundromat open past midnight. We knew which organizations promoted from within, which scouts liked us, and which managers used 'versatile' as a compliment or a warning.",
       "The big leagues had better talent, no question. But the minors had survival intelligence. A man who can sleep on a bus, play shortstop on a bad field, hit a slider under bad lights, and still remember where he packed his shower shoes is not dumb.",
-      "By the time I reached the majors for good, I had a doctorate in waiting. The diploma was a big league meal spread and nobody asking me to carry my own bag."
+      "By the time I reached the majors for good, I had a doctorate in waiting. The diploma was a big league meal spread and nobody asking me to carry my own bag.",
+      "The smartest minor leaguers also knew when not to talk. If the manager is angry, do not explain. If the bus driver is lost, do not help. If a teammate says he has a foolproof system for beating the horse track, move your wallet to the other pocket."
     ],
   },
   {
@@ -298,7 +320,8 @@ export const BONUS_STORIES = [
       "Dan Quisenberry threw from down under, which made hitters look like they had dropped their keys and were angry about it. His delivery was so low I sometimes wondered if the mound should have had a basement.",
       "One day I noticed his shoe. Pitchers' shoes tell stories. Starters have neat routines. Relievers have evidence. Quiz's shoe looked like it had been dragged across Missouri by a truck, which in a way it had. That submarine delivery asked a lot from leather.",
       "The man led the league in saves five times. In 1983 he had 45, which was a record then, and he did it without acting like the ninth inning needed fireworks. He came in, threw strikes, made hitters roll over, and said something dry enough to require water.",
-      "A closer's job is to make panic look scheduled. Quiz did that better than anyone I saw."
+      "A closer's job is to make panic look scheduled. Quiz did that better than anyone I saw.",
+      "Quiz was funny in a way that snuck up on you. He did not club you with a joke. He set it on the table and let you discover it after the inning. That was also how he pitched. Nothing looked overpowering until the other team walked back to the dugout wondering why the hell they were out."
     ],
   },
   {
@@ -310,7 +333,8 @@ export const BONUS_STORIES = [
       "Bobby Grich could turn a double play with the calm of a man mailing a letter. In September of 1985, every inning felt important for us, and a seventh-inning ball hit toward Grich was not just a grounder. It was a reminder that the other team employed professionals too.",
       "I admired infielders who made hard plays look routine because that is the trick. Fans remember the dive. Managers remember the routine ball you did not turn into an adventure.",
       "Grich had that economy good infielders have. No extra steps. No waving the glove around like he was trying to flag down a taxi. Catch, transfer, throw. Done. While the rest of us were still appreciating it, the runner was already out.",
-      "That is the cruelty of defense. If you do it beautifully, it disappears. If you do it badly, it lives forever."
+      "That is the cruelty of defense. If you do it beautifully, it disappears. If you do it badly, it lives forever.",
+      "A hitter can go 0-for-4 and blame the shadows, the umpire, a hangnail, or the fact that his wife bought the wrong cereal. An infielder kicks one ball and the whole stadium makes the same sound. Defense is honest, which is another way of saying it can be a real son of a bitch."
     ],
   },
   {
@@ -322,7 +346,8 @@ export const BONUS_STORIES = [
       "Every clubhouse needs a Caveman. Not necessarily the famous one. Just a man who enters a room and makes modern society seem temporary.",
       "Our Caveman had hair that ignored instructions, shoes that looked like they had been recovered from a campsite, and a theory about hitting that involved fewer words than most restaurant menus. He was not always wrong. Baseball can be overcomplicated. See ball. Hit ball. Do not miss sign. Pay taxes eventually.",
       "Players like that help a team because they remind everyone that the game is still a game. Yes, the standings matter. Yes, the writers are waiting. Yes, your manager may be trying to replace you with a man from Omaha. But at 7:05, the ball is still white, the grass is still green, and somebody in the clubhouse is using eye black as hair product.",
-      "The Caveman did not teach me refinement. He taught me perspective, which is better and cheaper."
+      "The Caveman did not teach me refinement. He taught me perspective, which is better and cheaper.",
+      "Every team needs one player who reminds everybody that shower shoes are optional only if you hate yourself. The Caveman's locker looked like a sporting goods store had been robbed by a man with no calendar. Somehow he still found his bat, which is more than I can say for several organized men I played with."
     ],
   },
   {
@@ -334,7 +359,8 @@ export const BONUS_STORIES = [
       "By 1986, I had seen enough baseball shoes to know that comfort and dignity rarely shared a locker. Then came the Volare shoes with brass. I do not know who decided ballplayers needed footwear that looked like it had been designed by an Italian trumpet section, but I admired the nerve.",
       "Shoes matter more than fans think. A bad pair can ruin a homestand. A good pair makes you believe your range has improved, even if the stopwatch disagrees. Brass on a baseball shoe did not make me faster, but it did make me easier to find in a clubhouse.",
       "At that point in my career, I was not chasing style. I was chasing one more roster spot, one more clean throw, one more day in the big leagues. If the shoes helped, fine. If they only made the rookies laugh, that was fine too.",
-      "Baseball takes your legs eventually. Before it does, you might as well wear something memorable."
+      "Baseball takes your legs eventually. Before it does, you might as well wear something memorable.",
+      "By the end, you know every ache by name. The left knee is the pessimistic one. The back files complaints before breakfast. The feet just want to know what idiot scheduled a day game after a night game. If brass on a shoe makes the whole operation feel a little less sad, wear the damn brass."
     ],
   },
   {
@@ -346,7 +372,8 @@ export const BONUS_STORIES = [
       "Getting married requires confidence, hope, and in my case, a written argument. I once considered presenting Michelle with thirteen reasons why she should marry me. Thirteen is not a romantic number, but it is more than twelve, and a utility infielder learns to use every advantage.",
       "Reason one was probably love. Reason two was that I could fix a glove. Reason three may have been that I owned several perfectly usable bats. By reason seven, the list was likely weakening. By reason thirteen, I was depending heavily on charm and the possibility that she had stopped reading.",
       "Baseball wives deserve their own statistics. Games endured. Moves survived. Bad moods after 0-for-4 nights forgiven. Children packed. Condos found. Flights changed. Uniform pants washed when the clubhouse missed one.",
-      "Michelle married me anyway, which proves she has either excellent judgment or a generous scouting report. I have been trying to justify the contract ever since."
+      "Michelle married me anyway, which proves she has either excellent judgment or a generous scouting report. I have been trying to justify the contract ever since.",
+      "I am glad she did not ask for a no-trade clause. Baseball had already dragged us through enough cities, apartments, pay cuts, call-ups, and clubhouse moods to test a saint. A player gets credit for grinding. A wife does the same thing without a uniform, without applause, and usually while reminding him not to be an ass."
     ],
   },
 ];

@@ -22,7 +22,7 @@ export default function BonusStoriesPage() {
             <span className="bonus-brand-mark">GP</span>
             <span>Greg Pryor</span>
           </a>
-          <a className="bonus-home-link mono" href="/#book">Back to the book</a>
+          <a className="bonus-home-link mono" href="/">Back to the site</a>
         </header>
 
         <section className="bonus-hero">
